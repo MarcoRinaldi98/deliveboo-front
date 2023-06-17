@@ -8,7 +8,7 @@ export default {
     <header class="container-fluid">
         <!-- Logo -->
         <div class="ms_logo">
-            <a href="">
+            <a href="/">
                 <img src="logo.gif" alt="logo" />
             </a>
         </div>

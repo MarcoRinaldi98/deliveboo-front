@@ -193,8 +193,9 @@ export default {
     background-color: #1d1d1d;
 }
 
-.pages .pagination .page-item:hover a {
-    color: #f3a446;
+#restaurants .ms_pages .pagination .page-item a:hover {
+    background-color: #a06235;
+    color: #1d1d1d;
 }
 
 /* MEDIA QUERY */

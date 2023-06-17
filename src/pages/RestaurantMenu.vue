@@ -235,7 +235,8 @@ export default {
     background-color: #a06235;
 }
 
-.ms_pages .pagination .page-item:hover a {
-    color: #f3a446;
+#our-menu .ms_pages .pagination .page-item a:hover {
+    background-color: #a06235;
+    color: #1d1d1d;
 }
 </style>
