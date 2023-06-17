@@ -6,10 +6,11 @@ export default {
 
 <template>
     <footer>
-        <section class="footer-top">
-            <div class="container">
+        <!-- Footer Top Section -->
+        <section class="ms_footer-top">
+            <div class="container-md">
                 <div class="row">
-                    <div class="col-4 inner-footer">
+                    <div class="col-6 col-md-4 ms_inner-footer">
                         <ul>
                             <li>
                                 <h2>Scopri Deliveboo</h2>
@@ -35,124 +36,155 @@ export default {
                         </ul>
                     </div>
 
-                    <div class="col-4 inner-footer">
-                        <ul>
-                            <li>
-                                <h2>Note legali</h2>
-                            </li>
-                            <li>
-                                <a href="#">Termini & Condizioni</a>
-                            </li>
-                            <li>
-                                <a href="#">Informativa sulla privacy</a>
-                            </li>
-                            <li>
-                                <a href="#">Cookies</a>
-                            </li>
-                        </ul>
-                    </div>
+                    <div class="col-6 col-md-8 container">
+                        <div class="row">
+                            <div class="col-12 col-md-6 ms_inner-footer">
+                                <ul>
+                                    <li>
+                                        <h2>Note legali</h2>
+                                    </li>
+                                    <li>
+                                        <a href="#">Termini & Condizioni</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">Informativa sulla privacy</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">Cookies</a>
+                                    </li>
+                                </ul>
+                            </div>
 
-                    <div class="col-4 inner-footer">
-                        <ul>
-                            <li>
-                                <h2>Aiuto</h2>
-                            </li>
-                            <li>
-                                <a href="#">Contatti</a>
-                            </li>
-                            <li>
-                                <a href="#">FAQ</a>
-                            </li>
-                            <li>
-                                <a href="#">Tipi di cucina</a>
-                            </li>
-                        </ul>
+                            <div class="col-12 col-md-6 ms_inner-footer">
+                                <ul>
+                                    <li>
+                                        <h2>Aiuto</h2>
+                                    </li>
+                                    <li>
+                                        <a href="#">Contatti</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">FAQ</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">Tipi di cucina</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
-
-        <section class="footer-bottom">
-            <div class="social">
+        <!-- Footer Bottom Section -->
+        <section class="ms_footer-bottom">
+            <!-- Social Icon -->
+            <div class="ms_social">
                 <a href="#"><i class='bx bxl-facebook'></i></a>
                 <a href="#"><i class='bx bxl-instagram'></i></a>
                 <a href="#"><i class='bx bxl-twitter'></i></a>
                 <a href="#"><i class='bx bxl-youtube'></i></a>
             </div>
-            <div class="links">
+            <!-- Utility Links -->
+            <div class="ms_links">
                 <a href="#">Privacy Policy</a>
                 <a href="#">Our Company</a>
                 <a href="#">Term Of Use</a>
             </div>
-            <p>&#169; 2023 Copyright Deliveboo</p>
+            <!-- Copyright -->
+            <p>&#169; {{ new Date().getFullYear() }} Copyright Deliveboo</p>
         </section>
     </footer>
 </template>
 
 <style lang="scss" scoped>
-.footer-top {
-    background-image: url(BG.png);
-    padding: 2rem 7%;
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: cover;
+footer {
+
+    & .ms_footer-top {
+        background-image: url(BG.png);
+        padding: 2rem 0;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: cover;
+
+        & .ms_inner-footer {
+            padding: 1rem;
+
+            & ul {
+                list-style: none;
+
+                & li {
+                    padding: 1rem 0;
+                    display: block;
+
+                    h2 {
+                        color: #a06235;
+                        font-size: 18px;
+                        padding: 0.5rem 0;
+                    }
+
+                    a {
+                        color: white;
+                        align-items: center;
+                        font-size: 12px;
+                        transition: 0.5s;
+                        text-decoration: none;
+                    }
+                }
+            }
+        }
+    }
+
+    & .ms_footer-bottom {
+        padding: 1rem 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        & .ms_social a {
+            font-size: 30px;
+            margin: 0.5rem;
+
+            & .bx {
+                padding: 5px;
+                color: #fff;
+                background: #161616;
+                border-radius: 50%;
+            }
+        }
+
+        & .ms_links {
+            margin: 1rem 0;
+
+            & a {
+                text-decoration: none;
+                font-weight: 500;
+                color: #a06235;
+                padding: 1rem;
+            }
+        }
+
+        & p {
+            text-align: center;
+            font-style: italic;
+            font-size: 14px;
+        }
+    }
 }
 
-.inner-footer {
-    padding: 3rem;
-}
-
-.inner-footer ul {
-    list-style: none;
-}
-
-.inner-footer ul li {
-    padding: 1rem 0;
-    display: block;
-}
-
-.inner-footer ul li h2 {
-    color: #a06235;
-    font-size: 24px;
-    padding: 1rem 0;
-}
-
-.inner-footer ul li a {
-    color: white;
-    align-items: center;
-    font-size: 16px;
-    transition: 0.5s;
-    text-decoration: none;
-}
-
-.inner-footer ul li a:hover {
+/* Interazioni */
+.ms_inner-footer ul li a:hover {
     margin-left: 10px;
 }
 
-.footer-bottom {
-    padding: 1rem 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.social a {
-    font-size: 30px;
-    margin: 0.5rem;
-}
-
-.social a .bx {
-    padding: 5px;
-    color: #fff;
-    background: #161616;
-    border-radius: 50%;
-}
-
-.social a:nth-child(1) .bx:hover {
+/* Hover social icon */
+//Facebook
+.ms_social a:nth-child(1) .bx:hover {
     background: #1773ea;
 }
 
-.social a:nth-child(2) .bx:hover {
+//Instagram
+.ms_social a:nth-child(2) .bx:hover {
     background: #f09433;
     background: -moz-linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
     background: -webkit-linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
@@ -160,32 +192,28 @@ export default {
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f09433', endColorstr='#bc1888', GradientType=1);
 }
 
-.social a:nth-child(3) .bx:hover {
+//Twitter
+.ms_social a:nth-child(3) .bx:hover {
     background: #1c9cea;
 }
 
-.social a:nth-child(4) .bx:hover {
+//Youtube
+.ms_social a:nth-child(4) .bx:hover {
     background: #f70000;
 }
 
-.links {
-    margin: 1rem 0;
-}
-
-.links a {
-    text-decoration: none;
-    font-weight: 500;
-    color: #a06235;
-    padding: 1rem;
-}
-
-.links a:hover {
+.ms_footer-bottom .ms_links a:hover {
     color: #f3a446;
 }
 
-.footer-bottom p {
-    text-align: center;
-    font-style: italic;
-    font-size: 14px;
+/* MEDIA QUERY */
+@media(min-width:768px) {
+    footer .ms_footer-top .ms_inner-footer ul li h2 {
+        font-size: 24px;
+    }
+
+    footer .ms_footer-top .ms_inner-footer ul li a {
+        font-size: 16px;
+    }
 }
 </style>
