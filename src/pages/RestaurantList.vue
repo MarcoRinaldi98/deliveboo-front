@@ -23,7 +23,10 @@ export default {
                         <h3>Poke House</h3>
                         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis deleniti vel fuga voluptate
                             perspiciatis?</p>
-                        <a href="#">Visualizza Menù</a>
+                        <!-- 
+                            <router-link :to="{ name: 'menu-detail', params: { id: restaurant.id } }" class="btn btn-primary rounded-pill text-white w-100 mt-auto mb-0">Menù</router-link>
+                        -->
+                        <a href="/menu">Visualizza Menù</a>
                     </div>
                 </div>
                 <!-- Ristorante -->
@@ -35,7 +38,7 @@ export default {
                         <h3>KFC</h3>
                         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis deleniti vel fuga voluptate
                             perspiciatis?</p>
-                        <a href="#">Visualizza Menù</a>
+                        <a href="/menu">Visualizza Menù</a>
                     </div>
                 </div>
                 <!-- Ristorante -->
@@ -47,7 +50,7 @@ export default {
                         <h3>Mc Donalds</h3>
                         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis deleniti vel fuga voluptate
                             perspiciatis?</p>
-                        <a href="#">Visualizza Menù</a>
+                        <a href="/menu">Visualizza Menù</a>
                     </div>
                 </div>
                 <!-- Ristorante -->
@@ -59,7 +62,7 @@ export default {
                         <h3>Kebhouze</h3>
                         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis deleniti vel fuga voluptate
                             perspiciatis?</p>
-                        <a href="#">Visualizza Menù</a>
+                        <a href="/menu">Visualizza Menù</a>
                     </div>
                 </div>
                 <!-- Ristorante -->
@@ -71,7 +74,7 @@ export default {
                         <h3>Billy Tacos</h3>
                         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis deleniti vel fuga voluptate
                             perspiciatis?</p>
-                        <a href="#">Visualizza Menù</a>
+                        <a href="/menu">Visualizza Menù</a>
                     </div>
                 </div>
                 <!-- Ristorante -->
@@ -83,7 +86,7 @@ export default {
                         <h3>Burger King</h3>
                         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis deleniti vel fuga voluptate
                             perspiciatis?</p>
-                        <a href="#">Visualizza Menù</a>
+                        <a href="/menu">Visualizza Menù</a>
                     </div>
                 </div>
             </div>
@@ -108,6 +111,8 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+@import "../styles/partials/variables";
+
 #restaurants {
     padding: 2rem 0;
     background-image: url(back1.jpg);
@@ -120,14 +125,14 @@ export default {
 
         & h1 {
             font-size: 40px;
-            color: #f3a446;
+            color: $primary-color;
         }
     }
 
     & .row {
 
         & .ms_restaurant {
-            background-color: #1d1d1dad;
+            background-color: $secondary-color;
             box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px;
             margin: 1rem 10px;
             padding: 2rem;
@@ -146,22 +151,22 @@ export default {
                 }
 
                 & h3 {
-                    color: #a06235;
+                    color: $primary-alternative-color;
                     font-size: 28px;
                     padding-top: 1rem;
                 }
 
                 & p {
-                    color: white;
+                    color: $color-white;
                     padding: 1rem 0;
                     padding-bottom: 2rem;
                 }
 
                 & a {
                     padding: 0.5rem 2rem;
-                    color: white;
+                    color: $color-white;
                     text-decoration: none;
-                    background: #f3a446;
+                    background-color: $primary-color;
                 }
             }
         }
@@ -172,17 +177,17 @@ export default {
         justify-content: center;
 
         & .pagination .page-item a {
-            background-color: #1d1d1d;
-            color: #a06235;
+            background-color: $secondary-color;
+            color: $primary-alternative-color;
             margin: 1rem auto;
-            border-color: #a06235;
+            border-color: $primary-alternative-color;
         }
     }
 }
 
 /* Interazioni */
 #restaurants .ms_restaurant:hover {
-    background: #f3a446;
+    background: $primary-color;
 }
 
 #restaurants .ms_restaurant:hover .restaurant-content img {
@@ -190,12 +195,12 @@ export default {
 }
 
 #restaurants .ms_restaurant .restaurant-content a:hover {
-    background-color: #1d1d1d;
+    background-color: $secondary-color;
 }
 
 #restaurants .ms_pages .pagination .page-item a:hover {
-    background-color: #a06235;
-    color: #1d1d1d;
+    background-color: $primary-alternative-color;
+    color: $secondary-color;
 }
 
 /* MEDIA QUERY */

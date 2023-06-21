@@ -77,7 +77,7 @@ export default {
             </div>
         </section>
         <!-- Footer Bottom Section -->
-        <section class="ms_footer-bottom">
+        <section class="ms_footer-bottom d-flex align-items-center flex-column">
             <!-- Social Icon -->
             <div class="ms_social">
                 <a href="#"><i class='bx bxl-facebook'></i></a>
@@ -98,6 +98,8 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+@import "../styles/partials/variables";
+
 footer {
 
     & .ms_footer-top {
@@ -114,17 +116,17 @@ footer {
                 list-style: none;
 
                 & li {
-                    padding: 1rem 0;
+                    padding: 0.5rem 0;
                     display: block;
 
                     h2 {
-                        color: #a06235;
+                        color: $primary-alternative-color;
                         font-size: 18px;
-                        padding: 0.5rem 0;
+                        padding: 0.2rem 0;
                     }
 
                     a {
-                        color: white;
+                        color: $color-white;
                         align-items: center;
                         font-size: 12px;
                         transition: 0.5s;
@@ -147,8 +149,8 @@ footer {
 
             & .bx {
                 padding: 5px;
-                color: #fff;
-                background: #161616;
+                color: $color-white;
+                background: $secondary-color;
                 border-radius: 50%;
             }
         }
@@ -159,7 +161,8 @@ footer {
             & a {
                 text-decoration: none;
                 font-weight: 500;
-                color: #a06235;
+                color: $primary-alternative-color;
+                font-size: 12px;
                 padding: 1rem;
             }
         }
@@ -207,6 +210,12 @@ footer {
 }
 
 /* MEDIA QUERY */
+@media(min-width:576px) {
+    footer .ms_footer-bottom .ms_links a {
+        font-size: 1rem;
+    }
+}
+
 @media(min-width:768px) {
     footer .ms_footer-top .ms_inner-footer ul li h2 {
         font-size: 24px;

@@ -140,6 +140,8 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+@import "../styles/partials/variables";
+
 #our-menu {
     background-image: url(back1.jpg);
     background-size: cover;
@@ -150,7 +152,7 @@ export default {
         font-size: 40px;
         padding: 2rem;
         text-align: center;
-        color: #f3a446;
+        color: $primary-color;
     }
 
     & .row {
@@ -162,7 +164,7 @@ export default {
             display: flex;
 
             & .inner-menu-content {
-                background-color: #1d1d1d82;
+                background-color: $secondary-color;
                 padding: 2rem 1rem;
                 border-radius: 20px;
                 position: relative;
@@ -177,20 +179,20 @@ export default {
                 }
 
                 & h2 {
-                    color: white;
+                    color: $color-white;
                     font-size: 28px;
                 }
 
                 & p {
                     padding: 1rem 0 2rem 0;
-                    color: white;
+                    color: $color-white;
                 }
 
                 & a {
                     margin-bottom: 15px;
                     padding: 1rem 1.5rem;
-                    background: #1d1d1d;
-                    color: white;
+                    background: $secondary-color;
+                    color: $color-white;
                     text-decoration: none;
                     align-items: end;
                 }
@@ -203,10 +205,10 @@ export default {
         justify-content: center;
 
         & .pagination .page-item a {
-            background-color: #1d1d1d;
-            color: #a06235;
+            background-color: $secondary-color;
+            color: $primary-alternative-color;
             margin: 1rem auto;
-            border-color: #a06235;
+            border-color: $primary-alternative-color;
         }
     }
 }
@@ -215,7 +217,7 @@ export default {
 #our-menu .inner-menu-content::before {
     content: '';
     position: absolute;
-    background-color: #f3a446;
+    background-color: $primary-color;
     bottom: 0;
     height: 0;
     width: 50%;
@@ -232,11 +234,11 @@ export default {
 }
 
 #our-menu .inner-menu-content a:hover {
-    background-color: #a06235;
+    background-color: $primary-alternative-color;
 }
 
 #our-menu .ms_pages .pagination .page-item a:hover {
-    background-color: #a06235;
-    color: #1d1d1d;
+    background-color: $primary-alternative-color;
+    color: $secondary-color;
 }
 </style>

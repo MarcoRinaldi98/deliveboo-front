@@ -1,106 +1,181 @@
 <script>
+import { store } from "../store.js";
 export default {
-    name: "AppHeader"
+    name: "AppHeader",
+    data() {
+        return {
+            store
+        };
+    }
 }
 </script>
 
 <template>
-    <header class="container-fluid">
-        <!-- Logo -->
-        <div class="ms_logo">
-            <a href="/">
-                <img src="logo.gif" alt="logo" />
-            </a>
+    <header class="w-100">
+        <div class="container-sm d-flex justify-content-between align-items-center h-100">
+            <!-- Logo -->
+            <div class="ms_logo h-100">
+                <a href="/">
+                    <img class="h-100" src="logo.gif" alt="logo" />
+                </a>
+            </div>
+            <!-- Navbar -->
+            <nav class="ms_navbar d-none d-md-block h-100">
+                <ul class="list-unstyled">
+                    <li class="d-inline-block">
+                        <a class="text-decoration-none" href="/">Home</a>
+                    </li>
+                    <li class="d-inline-block">
+                        <a class="text-decoration-none" href="/ristoranti">Ristoranti</a>
+                    </li>
+                </ul>
+            </nav>
+            <!-- Dropdown Menu -->
+            <div class="dropdown-center d-md-none">
+                <i class="fa-solid fa-bars h-100" data-bs-toggle="dropdown"></i>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="/">Home</a></li>
+                    <li><a class="dropdown-item" href="/ristoranti">Restaurant</a></li>
+                </ul>
+            </div>
+
+            <div class="ms_button h-100 d-flex align-items-center">
+                <!-- Pulsante per il login all'area ristoratori -->
+                <div class="me-2">
+                    <a href="http://127.0.0.1:8000/login" class="text-decoration-none fw-semibold">Area Ristoratori</a>
+                </div>
+
+                <!-- Bottone per il carrello da desktop -->
+                <div class="position-relative d-none d-lg-block">
+                    <button class="ms_cart position-relative border-0" @click="store.isCartOpen = !store.isCartOpen">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                    </button>
+                    <!-- Notifica oggetti contenuti nel carrello -->
+                    <div class="ms_quantity-badge badge rounded-pill position-absolute">
+                        2
+                    </div>
+
+                    <!-- Transition in dropdown per dettaglio carrello -->
+                    <Transition class="mt-3">
+                        <div v-if="store.isCartOpen" class="ms_cart-details position-absolute rounded-3">
+                            <h6 class="fw-bold p-3 m-0">Carrello</h6>
+
+                            <hr class="m-0" />
+
+                            <div>
+                                <div class="ms_cart-items-list m-3">
+
+                                    <div class="ms_cart-item d-flex">
+                                        <!-- Immagine prodotto -->
+                                        <img src="menu_1_1-1.png" class="ms_cart-image img-fluid" />
+
+                                        <!-- Nome prodotto -->
+                                        <div class="ms_cart-product-details d-flex flex-column ms-2">
+                                            <span class="d-block fw-bold">Petto di pollo</span>
+
+                                            <!-- Costo prodotto e quantità -->
+                                            <div class="ms_cart-product-prices d-flex">
+                                                <span>€19,99 x 1</span>
+                                                <span class="ms-2 text-success fw-bold"> €19,99</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- cestino per rimuovere l'elemento dall'carrello -->
+                                        <button class="btn border-0 ms-auto">
+                                            <i class="fa-regular fa-trash-can"></i>
+                                        </button>
+                                    </div>
+
+                                    <div class="ms_cart-item d-flex">
+                                        <!-- Immagine prodotto -->
+                                        <img src="menu_1_2.png" class="ms_cart-image img-fluid" />
+
+                                        <!-- Nome prodotto -->
+                                        <div class="ms_cart-product-details d-flex flex-column ms-2">
+                                            <span class="d-block fw-bold">Boccia de vino</span>
+
+                                            <!-- Costo prodotto e quantità -->
+                                            <div class="ms_cart-product-prices d-flex">
+                                                <span>€9,99 x 1</span>
+                                                <span class="ms-2 text-success fw-bold"> €9,99</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- cestino per rimuovere l'elemento dall'carrello -->
+                                        <button class="btn border-0 ms-auto">
+                                            <i class="fa-regular fa-trash-can"></i>
+                                        </button>
+                                    </div>
+
+                                </div>
+
+                                <div class="ms_checkout">
+                                    <!-- Bottone per procedere al checkout -->
+                                    <a href="/checkout" class="btn fw-bold text-white rounded-pill">
+                                        CHECKOUT: €29,98
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- In caso di carrello vuoto 
+                            <div class="cart-empty text-center p-3">
+                                <span>Carrello vuoto</span>
+                            </div>
+                            -->
+                        </div>
+                    </Transition>
+                </div>
+            </div>
         </div>
-        <!-- Navbar -->
-        <nav class="ms_navbar">
-            <ul>
-                <li>
-                    <a href="/">Home</a>
-                </li>
-                <li>
-                    <a href="/ristoranti">Restaurant</a>
-                </li>
-                <li>
-                    <a href="/menu">Menu</a>
-                </li>
-                <li>
-                    <a href="">About</a>
-                </li>
-                <li>
-                    <a href="">Contact</a>
-                </li>
-            </ul>
-        </nav>
-        <!-- Dropdown Menu -->
-        <div class="dropdown-center d-md-none">
-            <i class="fa-solid fa-bars" data-bs-toggle="dropdown"></i>
-            <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="/">Home</a></li>
-                <li><a class="dropdown-item" href="/ristoranti">Restaurant</a></li>
-                <li><a class="dropdown-item" href="/menu">Menu</a></li>
-                <li><a class="dropdown-item" href="/">About</a></li>
-                <li><a class="dropdown-item" href="/">Contact</a></li>
-            </ul>
-        </div>
-        <!-- Cart -->
-        <div class="ms_cart fa-solid fa-cart-shopping"></div>
     </header>
 </template>
 
 <style lang="scss" scoped>
+@import "../styles/partials/variables";
+
 header {
-    width: 100%;
     height: 100px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background-color: #000;
-    padding: 0 2rem;
+    background-color: $color-black;
 
-    & .ms_logo {
-        height: 100%;
+    & .container-sm {
 
-        & img {
-            height: 100%;
-            line-height: 100px;
+        & .ms_logo {
+
+            & img {
+                line-height: 100px;
+            }
         }
-    }
 
-    & .ms_navbar {
-        display: none;
-        height: 100%;
-        line-height: 100px;
+        & .ms_navbar {
+            line-height: 100px;
 
-        & ul {
-            list-style: none;
+            & ul {
 
-            & li {
-                display: inline-block;
-                position: relative;
+                & li {
+                    position: relative;
 
-                & a {
-                    text-decoration: none;
-                    padding: 100% 1.5rem;
-                    color: #f3a446;
+                    & a {
+                        padding: 100% 1.5rem;
+                        color: $primary-color;
 
-                    &:before {
-                        content: '';
-                        position: absolute;
-                        left: 0;
-                        bottom: 0;
-                        width: 100%;
-                        height: 2px;
-                        background-color: #f3a446;
-                        border-radius: 4px;
-                        scale: 0 1;
-                        transform-origin: right;
-                        transition: scale 0.5s;
-                    }
+                        &:before {
+                            content: '';
+                            position: absolute;
+                            left: 0;
+                            bottom: 0;
+                            width: 100%;
+                            height: 2px;
+                            background-color: $primary-color;
+                            border-radius: 4px;
+                            scale: 0 1;
+                            transform-origin: right;
+                            transition: scale 0.5s;
+                        }
 
-                    &:hover::before {
-                        scale: 1;
-                        transform-origin: left;
+                        &:hover::before {
+                            scale: 1;
+                            transform-origin: left;
+                        }
                     }
                 }
             }
@@ -111,10 +186,10 @@ header {
 
         & .dropdown-menu {
             width: 100vh;
-            background-color: #1d1d1d;
+            background-color: $secondary-color;
 
             & li a {
-                color: #f3a446;
+                color: $primary-color;
                 padding: 1rem 0 1rem 2rem;
             }
         }
@@ -122,40 +197,86 @@ header {
 
     & .fa-bars {
         font-size: 1.6rem;
-        color: #f3a446;
+        color: $primary-color;
         cursor: pointer;
-        height: 100%;
         line-height: 100px;
     }
 
-    & .ms_cart {
-        font-size: 1.6rem;
-        color: #f3a446;
-        cursor: pointer;
-        height: 100%;
-        line-height: 100px;
+    & .ms_button {
+
+        & a {
+            color: $secondary-color;
+            padding: 0.5rem 1rem;
+            background-color: $primary-color;
+            border-radius: 15px;
+            line-height: 100px;
+        }
+
+        & .ms_cart {
+            color: $secondary-color;
+            padding: 0.5rem 1rem;
+            background-color: $primary-color;
+            border-radius: 15px;
+        }
+
+        & .ms_quantity-badge {
+            background-color: $third-color;
+            color: $color-white;
+            top: -8px;
+            right: -8px;
+        }
+
+        & .ms_cart-details {
+            width: 400px;
+            min-height: 100px;
+            top: 80%;
+            right: 0;
+            background-color: $color-white;
+            z-index: 1005;
+
+            & .ms_cart-items-list {
+                max-height: 350px;
+                overflow: auto;
+
+                & .ms_cart-item {
+
+                    &:not(:last-child) {
+                        margin-bottom: 1rem;
+                    }
+
+                    & .ms_cart-image {
+                        width: 3rem;
+                        height: 3rem;
+                        object-fit: cover;
+                    }
+                }
+            }
+
+            & .ms_checkout {
+                padding: 10px;
+
+                & .btn {
+                    line-height: 30px;
+                    width: 100%;
+                }
+            }
+        }
     }
 }
 
 
 /* Interazioni */
-header .ms_navbar ul li a:hover {
-    color: #a06235;
+header .container-sm .ms_navbar ul li a:hover {
+    color: $primary-alternative-color;
 }
 
-header .dropdown-center ul li:hover {
-    background-color: #f3a446 !important;
+.ms_button a:hover {
+    background-color: $primary-alternative-color;
+    color: $color-white;
 }
 
-/* MEDIA QUERY */
-@media(min-width:768px) {
-    header {
-        justify-content: space-around;
-        padding: 0;
-
-        & .ms_navbar {
-            display: block;
-        }
-    }
+.ms_button .ms_cart:hover {
+    background-color: $primary-alternative-color;
+    color: $color-white;
 }
 </style>

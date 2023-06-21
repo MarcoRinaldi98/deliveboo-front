@@ -1,11 +1,13 @@
 <script>
 import AppHeader from './components/AppHeader.vue';
 import AppFooter from './components/AppFooter.vue';
+import MobileCart from './components/MobileCart.vue';
 
 export default {
   components: {
     AppHeader,
-    AppFooter
+    AppFooter,
+    MobileCart
   }
 }
 </script>
@@ -13,6 +15,7 @@ export default {
 <template>
   <AppHeader></AppHeader>
   <router-view></router-view>
+  <MobileCart></MobileCart>
   <AppFooter></AppFooter>
 </template>
 
