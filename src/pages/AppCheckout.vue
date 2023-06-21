@@ -143,13 +143,6 @@ export default {
                                     Phone
                                 </div>
                             </div>
-                            <div class="mb-3">
-                                <label for="note" class="form-label">Note</label>
-                                <textarea type="text" class="form-control" id="note" rows="3"></textarea>
-                                <div class="invalid-feedback">
-                                    Note
-                                </div>
-                            </div>
 
                             <button id="submit-button" type="submit" class="btn w-100 rounded-pill text-white">Invia
                                 l'ordine</button>
