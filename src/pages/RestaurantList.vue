@@ -1,6 +1,26 @@
 <script>
+import axios from 'axios';
+import {store} from '../store.js';
+
 export default {
-    name: "RestaurantList"
+    name: "RestaurantList",
+    data(){
+        return{
+            store,
+            restaurantsData:[],
+        }
+    },
+
+    methods:{
+        async RestaurantsApi(){
+            
+            await axios.get(`${this.store.baseUrl}/api/restaurants`)
+            .then(response=>{
+               this.restaurantsData = response.data.results;
+            });
+            
+        }     
+    }
 }
 </script>
 
@@ -20,7 +40,7 @@ export default {
                         <img src="pokehouse.jpeg" alt="Immagine Ristorante" />
                     </div>
                     <div class="restaurant-content">
-                        <h3>Poke House</h3>
+                        <h3></h3>
                         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis deleniti vel fuga voluptate
                             perspiciatis?</p>
                         <router-link :to="{ name: 'menu' }" href="/menu">
