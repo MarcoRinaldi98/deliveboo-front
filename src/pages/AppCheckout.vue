@@ -1,7 +1,55 @@
 <script>
+import { store } from "../store.js";
 
 export default {
-    name: "AppCheckout"
+    name: "AppCheckout",
+    data() {
+        return {
+            store,
+            isLoading: false,
+            formData: {
+                guest_name: "",
+                guest_surname: "",
+                guest_address: "",
+                guest_email: "",
+                guest_phone: "",
+                nonce: ""
+            }
+        }
+    },
+    methods: {
+        submitForm() {
+
+        }
+    },
+    mounted() {
+        this.store.isCartOpen = false;
+
+        var button = document.querySelector('#submit-button');
+
+        braintree.dropin.create({
+            authorization: 'sandbox_g42y39zw_348pk9cgf3bgyw2b',
+            selector: '#dropin-container'
+        }, function (err, instance) {
+            button.addEventListener("click", (event) => {
+                event.preventDefault();
+                this.isLoading = true;
+                instance.requestPaymentMethod((err, payload) => {
+                    if (err) {
+                        // Gestisco l'errore durante la richiesta del metodo di pagamento
+                        console.error(err);
+                        this.submitForm();
+                        this.isLoading = false;
+                        return;
+                    }
+                    // Aggiungi il campo 'nonce' al formData
+                    this.formData.nonce = payload.nonce;
+                    // Invia i dati dell'ordine al server
+                    this.submitForm();
+                });
+            });
+        })
+    }
 }
 </script>
 
@@ -88,12 +136,10 @@ export default {
 
                 <!-- Box form dati utente -->
                 <div class="col-12 col-lg-6 position-relative">
-                    <!-- LOADER PROCESSO ORDINE
-                    <div
+                    <div v-if="isLoading"
                         class="ms_driver-loader position-absolute top-0 end-0 bottom-0 start-0 d-flex justify-content-center align-items-start">
                         <img src="logo.gif" alt="Loading" />
                     </div>
-                    -->
 
                     <div class="ms_form-content border rounded-3">
                         <div class="form-title p-3">
@@ -105,47 +151,51 @@ export default {
                         <form class="p-3" method="POST">
                             <!-- Insermiento del nome dell'utente -->
                             <div class="mb-3">
-                                <label for="customer_name" class="form-label">Nome</label>
-                                <input type="text" class="form-control" id="customer_name" />
+                                <label for="guest_name" class="form-label">Nome</label>
+                                <input type="text" class="form-control" id="customer_name" v-model="guest_name" />
                                 <div class="invalid-feedback">
                                     Name
                                 </div>
                             </div>
                             <!-- Insermiento del cognome dell'utente -->
                             <div class="mb-3">
-                                <label for="customer_surname" class="form-label">Cognome</label>
-                                <input type="text" class="form-control" id="customer_surname" />
+                                <label for="guest_surname" class="form-label">Cognome</label>
+                                <input type="text" class="form-control" id="customer_surname" v-model="guest_surname" />
                                 <div class="invalid-feedback">
                                     Surname
                                 </div>
                             </div>
                             <!-- Insermiento indirizzo dell'utente -->
                             <div class="mb-3">
-                                <label for="customer_address" class="form-label">Indirizzo</label>
-                                <input type="text" class="form-control" id="customer_address" />
+                                <label for="guest_address" class="form-label">Indirizzo</label>
+                                <input type="text" class="form-control" id="customer_address" v-model="guest_address" />
                                 <div class="invalid-feedback">
                                     Indirizzo
                                 </div>
                             </div>
                             <!-- Insermineto email dell'utente -->
                             <div class="mb-3">
-                                <label for="customer_mail" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="customer_mail" />
+                                <label for="guest_mail" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="customer_mail" v-model="guest_mail" />
                                 <div class="invalid-feedback">
                                     Email
                                 </div>
                             </div>
                             <!-- Insermineto del numero di telefono dell'utente -->
                             <div class="mb-3">
-                                <label for="customer_phone_number" class="form-label">Telefono</label>
-                                <input type="text" class="form-control" id="customer_phone_number" maxlength="11" />
+                                <label for="guest_phone" class="form-label">Telefono</label>
+                                <input type="text" class="form-control" id="customer_phone_number" maxlength="11"
+                                    v-model="guest_phone" />
                                 <div class="invalid-feedback">
                                     Phone
                                 </div>
                             </div>
 
-                            <button id="submit-button" type="submit" class="btn w-100 rounded-pill text-white">Invia
-                                l'ordine</button>
+                            <div id="dropin-container"></div>
+
+                            <button id="submit-button" type="submit" class="btn w-100 rounded-pill text-white">
+                                Invia l'ordine
+                            </button>
                         </form>
                     </div>
                 </div>
@@ -199,20 +249,6 @@ img {
     min-height: 80px;
     height: 100%;
     object-fit: cover;
-}
-
-.button {
-    cursor: pointer;
-    font-weight: 500;
-    left: 3px;
-    line-height: inherit;
-    position: relative;
-    text-decoration: none;
-    text-align: center;
-    border-style: solid;
-    border-width: 1px;
-    border-radius: 3px;
-    display: inline-block;
 }
 
 #submit-button {

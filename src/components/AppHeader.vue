@@ -1,5 +1,6 @@
 <script>
 import { store } from "../store.js";
+
 export default {
     name: "AppHeader",
     data() {
@@ -15,9 +16,9 @@ export default {
         <div class="container-sm d-flex justify-content-between align-items-center h-100">
             <!-- Logo -->
             <div class="ms_logo h-100">
-                <a href="/">
+                <router-link :to="{ name: 'home' }">
                     <img class="h-100" src="logo.gif" alt="logo" />
-                </a>
+                </router-link>
             </div>
             <!-- Navbar -->
             <nav class="ms_navbar d-none d-md-block h-100">
@@ -34,8 +35,8 @@ export default {
             <div class="dropdown-center d-md-none">
                 <i class="fa-solid fa-bars h-100" data-bs-toggle="dropdown"></i>
                 <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="/">Home</a></li>
-                    <li><a class="dropdown-item" href="/ristoranti">Restaurant</a></li>
+                    <li><router-link class="dropdown-item" :to="{ name: 'home' }">Home</router-link></li>
+                    <li><router-link class="dropdown-item" :to="{ name: 'ristoranti' }">Restaurant</router-link></li>
                 </ul>
             </div>
 
@@ -111,9 +112,9 @@ export default {
 
                                 <div class="ms_checkout">
                                     <!-- Bottone per procedere al checkout -->
-                                    <a href="/checkout" class="btn fw-bold text-white rounded-pill">
+                                    <router-link :to="{ name: 'checkout' }" class="btn fw-bold text-white rounded-pill">
                                         CHECKOUT: €29,98
-                                    </a>
+                                    </router-link>
                                 </div>
                             </div>
 

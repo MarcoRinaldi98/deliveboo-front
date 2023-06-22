@@ -16,7 +16,7 @@ export default {
                         <h1>Deliveboo</h1>
                         <p>In pochi minuti il piatto che desiteri a casa tua!</p>
 
-                        <a href="/ristoranti">Sfoglia i nostri ristoranti</a>
+                        <router-link :to="{ name: 'ristoranti' }">Sfoglia i nostri ristoranti</router-link>
                     </div>
                 </div>
                 <!-- Right Content -->

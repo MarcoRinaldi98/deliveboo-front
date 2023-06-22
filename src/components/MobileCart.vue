@@ -84,8 +84,10 @@ export default {
 
                             <!-- Bottone per procedere al checkout -->
                             <div class="mt-auto">
-                                <a href="/checkout" class="btn ms_color-btn fw-bold text-white w-100 rounded-pill">Checkout:
-                                    €29,98</a>
+                                <router-link :to="{ name: 'checkout' }"
+                                    class="btn ms_color-btn fw-bold text-white w-100 rounded-pill">
+                                    Checkout: €29,98
+                                </router-link>
                             </div>
                         </div>
 

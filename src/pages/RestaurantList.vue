@@ -23,10 +23,9 @@ export default {
                         <h3>Poke House</h3>
                         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis deleniti vel fuga voluptate
                             perspiciatis?</p>
-                        <!-- 
-                            <router-link :to="{ name: 'menu-detail', params: { id: restaurant.id } }" class="btn btn-primary rounded-pill text-white w-100 mt-auto mb-0">Menù</router-link>
-                        -->
-                        <a href="/menu">Visualizza Menù</a>
+                        <router-link :to="{ name: 'menu' }" href="/menu">
+                            Visualizza Menù
+                        </router-link>
                     </div>
                 </div>
                 <!-- Ristorante -->
@@ -38,7 +37,9 @@ export default {
                         <h3>KFC</h3>
                         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis deleniti vel fuga voluptate
                             perspiciatis?</p>
-                        <a href="/menu">Visualizza Menù</a>
+                        <router-link :to="{ name: 'menu' }" href="/menu">
+                            Visualizza Menù
+                        </router-link>
                     </div>
                 </div>
                 <!-- Ristorante -->
@@ -50,7 +51,9 @@ export default {
                         <h3>Mc Donalds</h3>
                         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis deleniti vel fuga voluptate
                             perspiciatis?</p>
-                        <a href="/menu">Visualizza Menù</a>
+                        <router-link :to="{ name: 'menu' }" href="/menu">
+                            Visualizza Menù
+                        </router-link>
                     </div>
                 </div>
                 <!-- Ristorante -->
@@ -62,7 +65,9 @@ export default {
                         <h3>Kebhouze</h3>
                         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis deleniti vel fuga voluptate
                             perspiciatis?</p>
-                        <a href="/menu">Visualizza Menù</a>
+                        <router-link :to="{ name: 'menu' }" href="/menu">
+                            Visualizza Menù
+                        </router-link>
                     </div>
                 </div>
                 <!-- Ristorante -->
@@ -74,7 +79,9 @@ export default {
                         <h3>Billy Tacos</h3>
                         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis deleniti vel fuga voluptate
                             perspiciatis?</p>
-                        <a href="/menu">Visualizza Menù</a>
+                        <router-link :to="{ name: 'menu' }" href="/menu">
+                            Visualizza Menù
+                        </router-link>
                     </div>
                 </div>
                 <!-- Ristorante -->
@@ -86,7 +93,9 @@ export default {
                         <h3>Burger King</h3>
                         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis deleniti vel fuga voluptate
                             perspiciatis?</p>
-                        <a href="/menu">Visualizza Menù</a>
+                        <router-link :to="{ name: 'menu' }" href="/menu">
+                            Visualizza Menù
+                        </router-link>
                     </div>
                 </div>
             </div>
