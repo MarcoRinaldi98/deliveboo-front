@@ -1,25 +1,53 @@
 <script>
 import axios from 'axios';
-import {store} from '../store.js';
+import { store } from '../store.js';
 
 export default {
     name: "RestaurantList",
-    data(){
-        return{
+    data() {
+        return {
             store,
-            restaurantsData:[],
+            restaurants: [],
+            types: [],
+            currentType: '',
+            isLoading: false,
+            currentPage: 1,
+            lastPage: null
         }
     },
+    methods: {
+        async fetchRestaurants() {
+            this.isLoading = true;
+            let url = '';
 
-    methods:{
-        async RestaurantsApi(){
-            
-            await axios.get(`${this.store.baseUrl}/api/restaurants`)
-            .then(response=>{
-               this.restaurantsData = response.data.results;
-            });
-            
-        }     
+            if (this.selectedTypes = '') {
+                url = `${this.store.baseUrl}/api/restaurants`;
+            } else {
+                url = `${this.store.baseUrl}/api/restaurants/${this.currentType}`;
+            }
+
+            await axios.get(url)
+                .then((response) => {
+                    console.log(response);
+                    this.restaurants = response.data.results.data;
+                    this.currentPage = response.data.results.current_page;
+                    this.lastPage = response.data.results.last_page;
+                    this.isLoading = false;
+                });
+        },
+        fetchTypes() {
+            this.isLoading = true;
+
+            axios.get(`${this.store.baseUrl}/api/types`)
+                .then((response) => {
+                    this.types = response.data.results;
+                    this.isLoading = false;
+                });
+        }
+    },
+    created() {
+        this.fetchRestaurants();
+        this.fetchTypes();
     }
 }
 </script>
@@ -33,91 +61,34 @@ export default {
                 <h1>I nostri ristoranti</h1>
             </div>
 
+            <div class="ms_filter">
+                <select class="form-select" v-model="currentType">
+                    <option value=""> Tutti </option>
+                    <option v-for="typology in types" :value="typology.id"> {{ typology.name }} </option>
+                </select>
+            </div>
+
             <div class="row justify-content-center">
+
+                <!-- Loader -->
+                <div v-if="isLoading" class="driver-loader d-flex justify-content-center align-items-center py-5">
+                    <img src="logo.gif" alt="Loading" />
+                </div>
+
                 <!-- Ristorante -->
-                <div class="ms_restaurant col-12 col-md-6 col-lg-4">
+                <div v-for="restaurant in restaurants" class="ms_restaurant col-12 col-md-6 col-lg-4">
                     <div class="restaurant-content">
-                        <img src="pokehouse.jpeg" alt="Immagine Ristorante" />
+                        <img :src="`${this.store.baseUrl}/storage/${restaurant.image}`" alt="Immagine Ristorante" />
                     </div>
                     <div class="restaurant-content">
-                        <h3></h3>
-                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis deleniti vel fuga voluptate
-                            perspiciatis?</p>
+                        <h3>{{ restaurant.name }}</h3>
+                        <p>{{ restaurant.description }}</p>
                         <router-link :to="{ name: 'menu' }" href="/menu">
                             Visualizza Menù
                         </router-link>
                     </div>
                 </div>
-                <!-- Ristorante -->
-                <div class="ms_restaurant col-12 col-md-6 col-lg-4">
-                    <div class="restaurant-content">
-                        <img src="kfc.jpg" alt="Immagine Ristorante" />
-                    </div>
-                    <div class="restaurant-content">
-                        <h3>KFC</h3>
-                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis deleniti vel fuga voluptate
-                            perspiciatis?</p>
-                        <router-link :to="{ name: 'menu' }" href="/menu">
-                            Visualizza Menù
-                        </router-link>
-                    </div>
-                </div>
-                <!-- Ristorante -->
-                <div class="ms_restaurant col-12 col-md-6 col-lg-4">
-                    <div class="restaurant-content">
-                        <img src="mc.jpg" alt="Immagine Ristorante" />
-                    </div>
-                    <div class="restaurant-content">
-                        <h3>Mc Donalds</h3>
-                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis deleniti vel fuga voluptate
-                            perspiciatis?</p>
-                        <router-link :to="{ name: 'menu' }" href="/menu">
-                            Visualizza Menù
-                        </router-link>
-                    </div>
-                </div>
-                <!-- Ristorante -->
-                <div class="ms_restaurant col-12 col-md-6 col-lg-4">
-                    <div class="restaurant-content">
-                        <img src="kebhouse.jpeg" alt="Immagine Ristorante" />
-                    </div>
-                    <div class="restaurant-content">
-                        <h3>Kebhouze</h3>
-                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis deleniti vel fuga voluptate
-                            perspiciatis?</p>
-                        <router-link :to="{ name: 'menu' }" href="/menu">
-                            Visualizza Menù
-                        </router-link>
-                    </div>
-                </div>
-                <!-- Ristorante -->
-                <div class="ms_restaurant col-12 col-md-6 col-lg-4">
-                    <div class="restaurant-content">
-                        <img src="tacos.jpg" alt="Immagine Ristorante" />
-                    </div>
-                    <div class="restaurant-content">
-                        <h3>Billy Tacos</h3>
-                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis deleniti vel fuga voluptate
-                            perspiciatis?</p>
-                        <router-link :to="{ name: 'menu' }" href="/menu">
-                            Visualizza Menù
-                        </router-link>
-                    </div>
-                </div>
-                <!-- Ristorante -->
-                <div class="ms_restaurant col-12 col-md-6 col-lg-4">
-                    <div class="restaurant-content">
-                        <img src="burgerking.jpg" alt="Immagine Ristorante" />
-                    </div>
-                    <div class="restaurant-content">
-                        <h3>Burger King</h3>
-                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis deleniti vel fuga voluptate
-                            perspiciatis?</p>
-                        <router-link :to="{ name: 'menu' }" href="/menu">
-                            Visualizza Menù
-                        </router-link>
-                    </div>
-                </div>
+
             </div>
 
             <!-- Paginazione -->
@@ -125,13 +96,23 @@ export default {
                 <nav>
                     <ul class="pagination">
                         <!-- Indietro -->
-                        <li class="page-item"><a class="page-link" href="#">&laquo; Previous</a></li>
+                        <li class="page-item">
+                            <button class="page-link" :class="{ 'disabled': currentPage == 1 }">
+                                &laquo; Previous
+                            </button>
+                        </li>
                         <!-- Pulsanti pagina diretta -->
-                        <li class="page-item"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item" v-for="(page, index) in this.lastPage">
+                            <button class="page-link" :class="{ 'active': currentPage == index + 1 }">
+                                1
+                            </button>
+                        </li>
                         <!-- Avanti -->
-                        <li class="page-item"><a class="page-link" href="#">Next &raquo;</a></li>
+                        <li class="page-item">
+                            <button class="page-link" :class="{ 'disabled': currentPage == lastPage }">
+                                Next &raquo;
+                            </button>
+                        </li>
                     </ul>
                 </nav>
             </div>
@@ -155,6 +136,16 @@ export default {
         & h1 {
             font-size: 40px;
             color: $primary-color;
+        }
+    }
+
+    & .ms_filter {
+        width: 250px;
+
+        & select {
+            background-color: $secondary-color;
+            color: $primary-color;
+            border-color: $primary-color;
         }
     }
 
@@ -205,7 +196,7 @@ export default {
         display: flex;
         justify-content: center;
 
-        & .pagination .page-item a {
+        & .pagination .page-item button {
             background-color: $secondary-color;
             color: $primary-alternative-color;
             margin: 1rem auto;
@@ -227,7 +218,7 @@ export default {
     background-color: $secondary-color;
 }
 
-#restaurants .ms_pages .pagination .page-item a:hover {
+#restaurants .ms_pages .pagination .page-item button:hover {
     background-color: $primary-alternative-color;
     color: $secondary-color;
 }

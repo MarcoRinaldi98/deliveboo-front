@@ -1,6 +1,31 @@
 <script>
+import axios from 'axios';
+import { store } from '../store.js';
+
 export default {
-    name: "RestaurantMenu"
+    name: "RestaurantMenu",
+    data() {
+        return {
+            store,
+            dishes: [],
+            isLoading: false
+        }
+    },
+    methods: {
+        async fetchDishes() {
+            this.isLoading = true;
+
+            await axios.get(`${this.store.baseUrl}/api/dishes`)
+                .then((response) => {
+                    console.log(response);
+                    this.dishes = response.data.response;
+                    this.isLoading = false;
+                });
+        }
+    },
+    created() {
+        this.fetchDishes();
+    }
 }
 </script>
 
@@ -14,104 +39,18 @@ export default {
             </div>
 
             <div class="row justify-content-center">
-                <!-- Piatto del ristorante -->
-                <div class="inner-menu-con col-12 col-md-6 col-lg-4 col-xxl-3">
-                    <div class="inner-menu-content">
-                        <img src="menu_1_2.png" alt="Immagine piatto" />
-                        <h2>Pollo Arrosto</h2>
-                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae veritatis magni, harum odio
-                            delectus, quae explicabo evenie</p>
-                        <a href="#">
-                            <i class='bx bx-plus'></i>
-                            Aggiungi al carrello
-                        </a>
-                    </div>
+
+                <!-- Loader -->
+                <div v-if="isLoading" class="driver-loader d-flex justify-content-center align-items-center py-5">
+                    <img src="logo.gif" alt="Loading" />
                 </div>
+
                 <!-- Piatto del ristorante -->
-                <div class="inner-menu-con col-12 col-md-6 col-lg-4 col-xxl-3">
+                <div v-for="dish in dishes" class="inner-menu-con col-12 col-md-6 col-lg-4 col-xxl-3">
                     <div class="inner-menu-content">
-                        <img src="menu_1_3.png" alt="Immagine piatto" />
-                        <h2>Pizza Capricciosa</h2>
-                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae veritatis magni, harum odio
-                            delectus, quae explicabo evenie</p>
-                        <a href="#">
-                            <i class='bx bx-plus'></i>
-                            Aggiungi al carrello
-                        </a>
-                    </div>
-                </div>
-                <!-- Piatto del ristorante -->
-                <div class="inner-menu-con col-12 col-12 col-md-6 col-lg-4 col-xxl-3">
-                    <div class="inner-menu-content">
-                        <img src="menu_1_2.png" alt="Immagine piatto" />
-                        <h2>Pollo in Agrodolce</h2>
-                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae veritatis magni, harum odio
-                            delectus, quae explicabo evenie</p>
-                        <a href="#">
-                            <i class='bx bx-plus'></i>
-                            Aggiungi al carrello
-                        </a>
-                    </div>
-                </div>
-                <!-- Piatto del ristorante -->
-                <div class="inner-menu-con col-12 col-md-6 col-lg-4 col-xxl-3">
-                    <div class=" inner-menu-content">
-                        <img src="menu_1_3.png" alt="Immagine piatto" />
-                        <h2>Pizza Diavola</h2>
-                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae veritatis magni, harum odio
-                            delectus, quae explicabo evenie</p>
-                        <a href="#">
-                            <i class='bx bx-plus'></i>
-                            Aggiungi al carrello
-                        </a>
-                    </div>
-                </div>
-                <!-- Piatto del ristorante -->
-                <div class="inner-menu-con col-12 col-md-6 col-lg-4 col-xxl-3">
-                    <div class="inner-menu-content">
-                        <img src="menu_1_4.png" alt="Immagine piatto" />
-                        <h2>Tagliata di Manzo</h2>
-                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae veritatis magni, harum odio
-                            delectus, quae explicabo evenie</p>
-                        <a href="#">
-                            <i class='bx bx-plus'></i>
-                            Aggiungi al carrello
-                        </a>
-                    </div>
-                </div>
-                <!-- Piatto del ristorante -->
-                <div class="inner-menu-con col-12 col-md-6 col-lg-4 col-xxl-3">
-                    <div class="inner-menu-content">
-                        <img src="menu_1_5.png" alt="Immagine piatto" />
-                        <h2>Spaghetti di mare</h2>
-                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae veritatis magni, harum odio
-                            delectus, quae explicabo evenie</p>
-                        <a href="#">
-                            <i class='bx bx-plus'></i>
-                            Aggiungi al carrello
-                        </a>
-                    </div>
-                </div>
-                <!-- Piatto del ristorante -->
-                <div class="inner-menu-con col-12 col-md-6 col-lg-4 col-xxl-3">
-                    <div class="inner-menu-content">
-                        <img src="menu_1_4.png" alt="Immagine piatto" />
-                        <h2>Bistecca</h2>
-                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae veritatis magni, harum odio
-                            delectus, quae explicabo evenie</p>
-                        <a href="#">
-                            <i class='bx bx-plus'></i>
-                            Aggiungi al carrello
-                        </a>
-                    </div>
-                </div>
-                <!-- Piatto del ristorante -->
-                <div class="inner-menu-con col-12 col-md-6 col-lg-4 col-xxl-3">
-                    <div class="inner-menu-content">
-                        <img src="menu_1_5.png" alt="Immagine piatto" />
-                        <h2>Insalata di Mare</h2>
-                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae veritatis magni, harum odio
-                            delectus, quae explicabo evenie</p>
+                        <img :src="`${this.store.baseUrl}/storage/${dish.image}`" alt="Immagine piatto" />
+                        <h2>{{ dish.name }}</h2>
+                        <p>{{ dish.description }}</p>
                         <a href="#">
                             <i class='bx bx-plus'></i>
                             Aggiungi al carrello
