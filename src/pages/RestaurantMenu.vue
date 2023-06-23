@@ -15,7 +15,7 @@ export default {
         async fetchDishes() {
             this.isLoading = true;
 
-            await axios.get(`${this.store.baseUrl}/api/dishes`)
+            axios.get(`http://127.0.0.1:8000/api/dish/${this.$route.params.id}`)
                 .then((response) => {
                     console.log(response);
                     this.dishes = response.data.results;
@@ -36,6 +36,14 @@ export default {
             <!-- Titolo Sezione -->
             <div class="our-menu-title">
                 <h1>Sfoglia il menu</h1>
+            </div>
+
+            <!-- Pulsante per tornare alla lista dei ristoranti -->
+            <div class="ms_back">
+                <router-link :to="{ name: 'ristoranti' }" type="button" class="btn btn-primary btn-sm">
+                    <i class="fa-solid fa-left-long me-3"></i>
+                    Torna alla lista dei ristoranti
+                </router-link>
             </div>
 
             <div class="row justify-content-center">
@@ -94,6 +102,16 @@ export default {
         padding: 2rem;
         text-align: center;
         color: $primary-color;
+    }
+
+    & .ms_back {
+
+        & a {
+            width: 250px;
+            background-color: $secondary-color;
+            color: $primary-color;
+            border-color: $primary-color;
+        }
     }
 
     & .row {

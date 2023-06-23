@@ -34,7 +34,7 @@ export default {
                 await axios.get(url)
                     .then((response) => {
                         console.log(response);
-                        this.restaurants = response.data;
+                        this.restaurants = response.data.data;
                         this.isLoading = false;
                     });
             }
@@ -45,7 +45,6 @@ export default {
 
             axios.get(`${this.store.baseUrl}/api/types`)
                 .then((response) => {
-                    console.log(response);
                     this.types = response.data.results;
                     this.isLoading = false;
                 });
@@ -90,7 +89,7 @@ export default {
                     <div class="restaurant-content">
                         <h3>{{ restaurant.name }}</h3>
                         <p>{{ restaurant.description }}</p>
-                        <router-link :to="{ name: 'menu' }" href="/menu">
+                        <router-link :to="{ name: 'menu', params: { id: restaurant.id } }">
                             Visualizza Menù
                         </router-link>
                     </div>
