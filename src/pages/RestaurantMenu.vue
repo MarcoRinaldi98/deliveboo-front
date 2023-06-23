@@ -18,7 +18,7 @@ export default {
             await axios.get(`${this.store.baseUrl}/api/dishes`)
                 .then((response) => {
                     console.log(response);
-                    this.dishes = response.data.response;
+                    this.dishes = response.data.results;
                     this.isLoading = false;
                 });
         }
