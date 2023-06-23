@@ -20,26 +20,32 @@ export default {
             this.isLoading = true;
             let url = '';
 
-            if (this.selectedTypes = '') {
+            if (this.currentType == '') {
                 url = `${this.store.baseUrl}/api/restaurants`;
+                await axios.get(url)
+                    .then((response) => {
+                        console.log(response);
+                        this.restaurants = response.data.results.data;
+                        this.isLoading = false;
+                    });
             } else {
-                url = `${this.store.baseUrl}/api/restaurants/${this.currentType}`;
-            }
+                url = `${this.store.baseUrl}/api/restaurants/type/${this.currentType}`;
 
-            await axios.get(url)
-                .then((response) => {
-                    console.log(response);
-                    this.restaurants = response.data.results.data;
-                    this.currentPage = response.data.results.current_page;
-                    this.lastPage = response.data.results.last_page;
-                    this.isLoading = false;
-                });
+                await axios.get(url)
+                    .then((response) => {
+                        console.log(response);
+                        this.restaurants = response.data;
+                        this.isLoading = false;
+                    });
+            }
+            this.isLoading = false;
         },
         fetchTypes() {
             this.isLoading = true;
 
             axios.get(`${this.store.baseUrl}/api/types`)
                 .then((response) => {
+                    console.log(response);
                     this.types = response.data.results;
                     this.isLoading = false;
                 });
@@ -62,8 +68,8 @@ export default {
             </div>
 
             <div class="ms_filter">
-                <select class="form-select" v-model="currentType">
-                    <option value=""> Tutti </option>
+                <select class="form-select" v-model="currentType" @change="fetchRestaurants()">
+                    <option value="" selected> Tutti </option>
                     <option v-for="typology in types" :value="typology.id"> {{ typology.name }} </option>
                 </select>
             </div>
@@ -76,7 +82,8 @@ export default {
                 </div>
 
                 <!-- Ristorante -->
-                <div v-for="restaurant in restaurants" class="ms_restaurant col-12 col-md-6 col-lg-4">
+                <div v-if="restaurants.length > 0" v-for="restaurant in restaurants"
+                    class="ms_restaurant col-12 col-md-6 col-lg-4">
                     <div class="restaurant-content">
                         <img :src="`${this.store.baseUrl}/storage/${restaurant.image}`" alt="Immagine Ristorante" />
                     </div>
@@ -87,6 +94,10 @@ export default {
                             Visualizza Menù
                         </router-link>
                     </div>
+                </div>
+
+                <div v-else class="d-flex justify-content-center align-items-center py-5">
+                    <h3 class="text-white fst-italic">Nessun ristorante per il tipo selezionato</h3>
                 </div>
 
             </div>
@@ -179,7 +190,9 @@ export default {
                 & p {
                     color: $color-white;
                     padding: 1rem 0;
-                    padding-bottom: 2rem;
+                    margin-bottom: 2rem;
+                    height: 150px;
+                    overflow: hidden;
                 }
 
                 & a {
