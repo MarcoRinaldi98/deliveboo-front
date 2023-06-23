@@ -48,7 +48,9 @@ export default {
                 <!-- Piatto del ristorante -->
                 <div v-for="dish in dishes" class="inner-menu-con col-12 col-md-6 col-lg-4 col-xxl-3">
                     <div class="inner-menu-content">
-                        <img :src="`${this.store.baseUrl}/storage/${dish.image}`" alt="Immagine piatto" />
+                        <img v-if="dish.image" :src="`${this.store.baseUrl}/storage/${dish.image}`" alt="Immagine piatto" />
+                        <img v-else src="https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg"
+                            alt="no image">
                         <h2>{{ dish.name }}</h2>
                         <p>{{ dish.description }}</p>
                         <a href="#">
