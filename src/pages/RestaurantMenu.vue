@@ -7,8 +7,9 @@ export default {
     data() {
         return {
             store,
-            dishes: [],
-            isLoading: false
+
+            isLoading: false,
+
         }
     },
     methods: {
@@ -18,9 +19,15 @@ export default {
             axios.get(`http://127.0.0.1:8000/api/dish/${this.$route.params.id}`)
                 .then((response) => {
                     console.log(response);
-                    this.dishes = response.data.results;
+                    this.store.dishes = response.data.results;
                     this.isLoading = false;
                 });
+        },
+        AddTocart(index) {
+            this.store.cart = JSON.parse(sessionStorage.getItem('cart')) || [];
+            this.store.cart.push(this.store.dishes[index]);
+            sessionStorage.setItem('cart', JSON.stringify(this.store.cart));
+            console.log(sessionStorage.getItem('cart'))
         }
     },
     created() {
@@ -54,17 +61,17 @@ export default {
                 </div>
 
                 <!-- Piatto del ristorante -->
-                <div v-for="dish in dishes" class="inner-menu-con col-12 col-md-6 col-lg-4 col-xxl-3">
+                <div v-for="(dish, index) in this.store.dishes" :key="index" class="inner-menu-con col-12 col-md-6 col-lg-4 col-xxl-3">
                     <div class="inner-menu-content">
                         <img v-if="dish.image" :src="`${this.store.baseUrl}/storage/${dish.image}`" alt="Immagine piatto" />
                         <img v-else src="https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg"
                             alt="no image">
                         <h2>{{ dish.name }}</h2>
                         <p>{{ dish.description }}</p>
-                        <a href="#">
+                        <button @click="AddTocart(index)">
                             <i class='bx bx-plus'></i>
                             Aggiungi al carrello
-                        </a>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -147,7 +154,7 @@ export default {
                     color: $color-white;
                 }
 
-                & a {
+                & button {
                     margin-bottom: 15px;
                     padding: 1rem 1.5rem;
                     background: $secondary-color;
