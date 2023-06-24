@@ -18,9 +18,26 @@ export default {
         }
     },
     methods: {
+        deleteFromCart(index) {
+            let newItem = JSON.parse(sessionStorage.getItem('cart'))
+            this.store.cart.splice(index, 1)
+            sessionStorage.setItem('cart', JSON.stringify(this.store.cart))
+            console.log(this.store.cartData)
+        },
         submitForm() {
 
         }
+    },
+    computed: {
+        totalPrice() {
+            let totalPrice = 0;
+
+            this.store.cart.forEach((item) => {
+                totalPrice += item.price;
+            });
+
+            return totalPrice;
+        },
     },
     mounted() {
         this.store.isCartOpen = false;
@@ -49,7 +66,7 @@ export default {
                 });
             });
         })
-    }
+    },
 }
 </script>
 
@@ -69,54 +86,32 @@ export default {
 
                         <div class="ms_order-items-content d-flex flex-column p-3 gap-3">
                             <div class="ms_card">
-                                <div class="row ms_card-row">
+                                <div v-for="(element, index) in this.store.cart" class="row ms_card-row">
                                     <!-- Immagine prodotto -->
                                     <div class="col-4 h-100">
-                                        <img src="menu_1_1-1.png" class="rounded-start" alt="image" />
+                                        <img :src="`${this.store.baseUrl}/storage/${element.image}`" class="rounded-start"
+                                            alt="image" />
                                     </div>
                                     <div class="col-8 h-100 ps-0">
                                         <div class="ms_card-body d-flex align-items-center h-100 ps-0">
                                             <div class="card-details">
                                                 <!-- Nome prodotto -->
-                                                <h5 class="card-title m-0">Petto di pollo</h5>
+                                                <h5 class="card-title m-0">{{ element.name }}</h5>
                                                 <!-- Quantità prodotto -->
                                                 <small class="fst-italic m-0">Quantità: 1</small>
                                                 <!-- Costo prodotto -->
-                                                <span class="text-success fw-bold me-2 d-block d-sm-none">€19,99</span>
+                                                <span class="text-success fw-bold me-2 d-block d-sm-none">
+                                                    €{{ element.price }}
+                                                </span>
                                             </div>
 
                                             <div class="item-price-delete d-flex align-items-center ms-auto">
-                                                <span class="text-success fw-bold me-2 d-none d-sm-block">€19,99</span>
+                                                <span class="text-success fw-bold me-2 d-none d-sm-block">
+                                                    €{{ element.price }}
+                                                </span>
 
                                                 <!-- cestino per rimuovere l'elemento dall'ordine/carrello -->
-                                                <button class="btn border-0 ms-auto">
-                                                    <i class="fa-regular fa-trash-can"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row ms_card-row">
-                                    <!-- Immagine prodotto -->
-                                    <div class="col-4 h-100">
-                                        <img src="menu_1_2.png" class="rounded-start" alt="image" />
-                                    </div>
-                                    <div class="col-8 h-100 ps-0">
-                                        <div class="ms_card-body d-flex align-items-center h-100 ps-0">
-                                            <div class="card-details">
-                                                <!-- Nome prodotto -->
-                                                <h5 class="card-title m-0">Boccia de vino</h5>
-                                                <!-- Quantità prodotto -->
-                                                <small class="fst-italic m-0">Quantità: 1</small>
-                                                <!-- Costo prodotto -->
-                                                <span class="text-success fw-bold me-2 d-block d-sm-none">€19,99</span>
-                                            </div>
-
-                                            <div class="item-price-delete d-flex align-items-center ms-auto">
-                                                <span class="text-success fw-bold me-2 d-none d-sm-block">€9,99</span>
-
-                                                <!-- cestino per rimuovere l'elemento dall'ordine/carrello -->
-                                                <button class="btn border-0 ms-auto">
+                                                <button @click="deleteFromCart(index)" class="btn border-0 ms-auto">
                                                     <i class="fa-regular fa-trash-can"></i>
                                                 </button>
                                             </div>
@@ -129,7 +124,7 @@ export default {
                         <hr class="m-0 mt-auto" />
                         <!-- Importo totale -->
                         <h3 class="text-end mb-0 p-3 fw-regular">
-                            Totale: <span class="text-success fw-bold">€29,98</span>
+                            Totale: <span class="text-success fw-bold">€{{ totalPrice.toFixed(2).replace(".", ",") }}</span>
                         </h3>
                     </div>
                 </div>

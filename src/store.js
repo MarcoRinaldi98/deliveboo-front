@@ -6,6 +6,6 @@ export const store = reactive({
     isCartOpen: false,
 
     dishes: [],
-    cart : null,
 
+    cart: '',
 });

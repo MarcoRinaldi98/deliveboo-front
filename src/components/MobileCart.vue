@@ -6,23 +6,29 @@ export default {
     data() {
         return {
             store,
-
-
         };
     },
     methods: {
         deleteFromCart(index) {
             let newItem = JSON.parse(sessionStorage.getItem('cart'))
-            this.store.cart.splice(index , 1)
+            this.store.cart.splice(index, 1)
             sessionStorage.setItem('cart', JSON.stringify(this.store.cart))
-            console.log(this.store.cartData)
         },
         getCart() {
-            this.store.cart = JSON.parse(sessionStorage.getItem('cart')) || []
-
-            console.log('ci sonooo')
+            this.store.cart = JSON.parse(sessionStorage.getItem('cart')) || [];
             console.log(sessionStorage.getItem('cart'))
         }
+    },
+    computed: {
+        totalPrice() {
+            let totalPrice = 0;
+
+            this.store.cart.forEach((item) => {
+                totalPrice += item.price;
+            });
+
+            return totalPrice;
+        },
     },
     mounted() {
         this.getCart();
@@ -37,8 +43,8 @@ export default {
             <i class="fa-solid fa-cart-shopping"></i>
 
             <!-- Notifica oggetti contenuti nel carrello -->
-            <div class="ms_quantity-badge rounded-pill">
-                <span>2</span>
+            <div v-if="store.cart.length > 0" class="ms_quantity-badge rounded-pill">
+                <span>{{ this.store.cart.length }}</span>
             </div>
         </button>
         <!-- Canvas per dettaglio carrello -->
@@ -57,21 +63,22 @@ export default {
 
                         <hr />
 
-                        <div class="ms_cart-item-container d-flex flex-column flex-grow-1">
+                        <div v-if="store.cart.length > 0" class="ms_cart-item-container d-flex flex-column flex-grow-1">
                             <div class="ms_cart-items-list mb-3">
                                 <div v-for="(element, index) in this.store.cart"
                                     class="ms_cart-item d-flex align-items-center">
                                     <!-- Immagine prodotto -->
-                                    <img :src="element.image" class="ms_cart-image img-fluid" />
+                                    <img :src="`${this.store.baseUrl}/storage/${element.image}`"
+                                        class="ms_cart-image img-fluid" />
 
                                     <!-- Nome prodotto -->
                                     <div class="cart-product-details d-flex flex-column ms-3">
-                                        <h5 class="d-block mb-0 fw-bold">{{element.name}}</h5>
+                                        <h5 class="d-block mb-0 fw-bold">{{ element.name }}</h5>
 
                                         <!-- Costo prodotto e quantità -->
                                         <div class="ms_cart-product-prices d-flex">
-                                            <span>€{{element.price}} x 1</span>
-                                            <span class="ms-2 text-success fw-bold"> €{{element.price}}</span>
+                                            <span>€{{ element.price }} x 1</span>
+                                            <span class="ms-2 text-success fw-bold"> €{{ element.price }}</span>
                                         </div>
                                     </div>
 
@@ -87,17 +94,15 @@ export default {
                             <div class="mt-auto">
                                 <router-link :to="{ name: 'checkout' }"
                                     class="btn ms_color-btn fw-bold text-white w-100 rounded-pill">
-                                    Checkout: €29,98
+                                    Checkout: €{{ totalPrice.toFixed(2).replace(".", ",") }}
                                 </router-link>
                             </div>
                         </div>
 
-                        <!-- In caso di carrello vuoto 
-                        <div class="ms_cart-empty text-center p-3">
+                        <!-- In caso di carrello vuoto -->
+                        <div v-else class="ms_cart-empty text-center p-3">
                             <span>Carrello vuoto</span>
                         </div>
-                        -->
-                        
                     </div>
                 </div>
             </div>

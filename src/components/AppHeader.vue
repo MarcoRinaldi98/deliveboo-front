@@ -8,12 +8,23 @@ export default {
             store
         };
     },
-    methods : {
+    methods: {
         deleteFromCart(index) {
             let newItem = JSON.parse(sessionStorage.getItem('cart'))
-            this.store.cart.splice(index , 1)
+            this.store.cart.splice(index, 1)
             sessionStorage.setItem('cart', JSON.stringify(this.store.cart))
             console.log(this.store.cartData)
+        },
+    },
+    computed: {
+        totalPrice() {
+            let totalPrice = 0;
+
+            this.store.cart.forEach((item) => {
+                totalPrice += item.price;
+            });
+
+            return totalPrice;
         },
     }
 }
@@ -60,8 +71,8 @@ export default {
                         <i class="fa-solid fa-cart-shopping"></i>
                     </button>
                     <!-- Notifica oggetti contenuti nel carrello -->
-                    <div class="ms_quantity-badge badge rounded-pill position-absolute">
-                        2
+                    <div v-if="store.cart.length > 0" class="ms_quantity-badge badge rounded-pill position-absolute">
+                        {{ this.store.cart.length }}
                     </div>
 
                     <!-- Transition in dropdown per dettaglio carrello -->
@@ -71,21 +82,22 @@ export default {
 
                             <hr class="m-0" />
 
-                            <div>
+                            <div v-if="store.cart.length > 0">
                                 <div class="ms_cart-items-list m-3">
 
                                     <div v-for="(element, index) in this.store.cart" class="ms_cart-item d-flex">
                                         <!-- Immagine prodotto -->
-                                        <img :src="element.image" class="ms_cart-image img-fluid" />
+                                        <img :src="`${this.store.baseUrl}/storage/${element.image}`"
+                                            class="ms_cart-image img-fluid" />
 
                                         <!-- Nome prodotto -->
                                         <div class="ms_cart-product-details d-flex flex-column ms-2">
-                                            <span class="d-block fw-bold">{{element.name}}</span>
+                                            <span class="d-block fw-bold">{{ element.name }}</span>
 
                                             <!-- Costo prodotto e quantità -->
                                             <div class="ms_cart-product-prices d-flex">
-                                                <span>€{{element.price}} x 1</span>
-                                                <span class="ms-2 text-success fw-bold"> €{{element.price}}</span>
+                                                <span>€{{ element.price }} x 1</span>
+                                                <span class="ms-2 text-success fw-bold"> €{{ element.price }}</span>
                                             </div>
                                         </div>
 
@@ -100,16 +112,15 @@ export default {
                                 <div class="ms_checkout">
                                     <!-- Bottone per procedere al checkout -->
                                     <router-link :to="{ name: 'checkout' }" class="btn fw-bold text-white rounded-pill">
-                                        CHECKOUT: €29,98
+                                        CHECKOUT: €{{ totalPrice.toFixed(2).replace(".", ",") }}
                                     </router-link>
                                 </div>
                             </div>
 
-                            <!-- In caso di carrello vuoto 
-                            <div class="cart-empty text-center p-3">
+                            <!-- In caso di carrello vuoto -->
+                            <div v-else class="cart-empty text-center p-3">
                                 <span>Carrello vuoto</span>
                             </div>
-                            -->
                         </div>
                     </Transition>
                 </div>
