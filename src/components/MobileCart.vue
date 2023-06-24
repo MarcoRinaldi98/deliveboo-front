@@ -97,6 +97,7 @@ export default {
                             <span>Carrello vuoto</span>
                         </div>
                         -->
+                        
                     </div>
                 </div>
             </div>
