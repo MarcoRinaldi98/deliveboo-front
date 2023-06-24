@@ -7,6 +7,14 @@ export default {
         return {
             store
         };
+    },
+    methods : {
+        deleteFromCart(index) {
+            let newItem = JSON.parse(sessionStorage.getItem('cart'))
+            this.store.cart.splice(index , 1)
+            sessionStorage.setItem('cart', JSON.stringify(this.store.cart))
+            console.log(this.store.cartData)
+        },
     }
 }
 </script>
@@ -66,44 +74,23 @@ export default {
                             <div>
                                 <div class="ms_cart-items-list m-3">
 
-                                    <div class="ms_cart-item d-flex">
+                                    <div v-for="(element, index) in this.store.cart" class="ms_cart-item d-flex">
                                         <!-- Immagine prodotto -->
-                                        <img src="menu_1_1-1.png" class="ms_cart-image img-fluid" />
+                                        <img :src="element.image" class="ms_cart-image img-fluid" />
 
                                         <!-- Nome prodotto -->
                                         <div class="ms_cart-product-details d-flex flex-column ms-2">
-                                            <span class="d-block fw-bold">Petto di pollo</span>
+                                            <span class="d-block fw-bold">{{element.name}}</span>
 
                                             <!-- Costo prodotto e quantità -->
                                             <div class="ms_cart-product-prices d-flex">
-                                                <span>€19,99 x 1</span>
-                                                <span class="ms-2 text-success fw-bold"> €19,99</span>
+                                                <span>€{{element.price}} x 1</span>
+                                                <span class="ms-2 text-success fw-bold"> €{{element.price}}</span>
                                             </div>
                                         </div>
 
                                         <!-- cestino per rimuovere l'elemento dall'carrello -->
-                                        <button class="btn border-0 ms-auto">
-                                            <i class="fa-regular fa-trash-can"></i>
-                                        </button>
-                                    </div>
-
-                                    <div class="ms_cart-item d-flex">
-                                        <!-- Immagine prodotto -->
-                                        <img src="menu_1_2.png" class="ms_cart-image img-fluid" />
-
-                                        <!-- Nome prodotto -->
-                                        <div class="ms_cart-product-details d-flex flex-column ms-2">
-                                            <span class="d-block fw-bold">Boccia de vino</span>
-
-                                            <!-- Costo prodotto e quantità -->
-                                            <div class="ms_cart-product-prices d-flex">
-                                                <span>€9,99 x 1</span>
-                                                <span class="ms-2 text-success fw-bold"> €9,99</span>
-                                            </div>
-                                        </div>
-
-                                        <!-- cestino per rimuovere l'elemento dall'carrello -->
-                                        <button class="btn border-0 ms-auto">
+                                        <button @click="deleteFromCart(index)" class="btn border-0 ms-auto">
                                             <i class="fa-regular fa-trash-can"></i>
                                         </button>
                                     </div>

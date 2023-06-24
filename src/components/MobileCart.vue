@@ -5,8 +5,27 @@ export default {
     name: "MobileCart",
     data() {
         return {
-            store
+            store,
+
+
         };
+    },
+    methods: {
+        deleteFromCart(index) {
+            let newItem = JSON.parse(sessionStorage.getItem('cart'))
+            this.store.cart.splice(index , 1)
+            sessionStorage.setItem('cart', JSON.stringify(this.store.cart))
+            console.log(this.store.cartData)
+        },
+        getCart() {
+            this.store.cart = JSON.parse(sessionStorage.getItem('cart')) || []
+
+            console.log('ci sonooo')
+            console.log(sessionStorage.getItem('cart'))
+        }
+    },
+    mounted() {
+        this.getCart();
     }
 }
 </script>
@@ -40,46 +59,28 @@ export default {
 
                         <div class="ms_cart-item-container d-flex flex-column flex-grow-1">
                             <div class="ms_cart-items-list mb-3">
-                                <div class="ms_cart-item d-flex align-items-center">
+                                <div v-for="(element, index) in this.store.cart"
+                                    class="ms_cart-item d-flex align-items-center">
                                     <!-- Immagine prodotto -->
-                                    <img src="menu_1_1-1.png" class="ms_cart-image img-fluid" />
+                                    <img :src="element.image" class="ms_cart-image img-fluid" />
 
                                     <!-- Nome prodotto -->
                                     <div class="cart-product-details d-flex flex-column ms-3">
-                                        <h5 class="d-block mb-0 fw-bold">Petto di pollo</h5>
+                                        <h5 class="d-block mb-0 fw-bold">{{element.name}}</h5>
 
                                         <!-- Costo prodotto e quantità -->
                                         <div class="ms_cart-product-prices d-flex">
-                                            <span>€19,99 x 1</span>
-                                            <span class="ms-2 text-success fw-bold"> €19,99</span>
+                                            <span>€{{element.price}} x 1</span>
+                                            <span class="ms-2 text-success fw-bold"> €{{element.price}}</span>
                                         </div>
                                     </div>
 
                                     <!-- cestino per rimuovere l'elemento dall'carrello -->
-                                    <button class="btn border-0 ms-auto">
+                                    <button @click="deleteFromCart(index)" class="btn border-0 ms-auto">
                                         <i class="fa-regular fa-trash-can"></i>
                                     </button>
                                 </div>
-                                <div class="ms_cart-item d-flex align-items-center">
-                                    <!-- Immagine prodotto -->
-                                    <img src="menu_1_2.png" class="ms_cart-image img-fluid" />
 
-                                    <!-- Nome prodotto -->
-                                    <div class="ms_cart-product-details d-flex flex-column ms-3">
-                                        <h5 class="d-block mb-0 fw-bold">Boccia de vino</h5>
-
-                                        <!-- Costo prodotto e quantità -->
-                                        <div class="ms_cart-product-prices d-flex">
-                                            <span>€9,99 x 1</span>
-                                            <span class="ms-2 text-success fw-bold"> €9,99</span>
-                                        </div>
-                                    </div>
-
-                                    <!-- cestino per rimuovere l'elemento dall'carrello -->
-                                    <button class="btn border-0 ms-auto">
-                                        <i class="fa-regular fa-trash-can"></i>
-                                    </button>
-                                </div>
                             </div>
 
                             <!-- Bottone per procedere al checkout -->
