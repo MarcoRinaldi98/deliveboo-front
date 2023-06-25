@@ -190,7 +190,7 @@ export default {
                     color: $color-white;
                     padding: 1rem 0;
                     margin-bottom: 2rem;
-                    height: 150px;
+                    height: 140px;
                     overflow: hidden;
                 }
 
