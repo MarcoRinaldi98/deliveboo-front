@@ -167,32 +167,18 @@ export default {
                     </div>
                 </div>
             </div>
-
-            <!-- Paginazione -->
-            <div class="ms_pages d-flex justify-content-center">
-                <nav>
-                    <ul class="pagination">
-                        <!-- Indietro -->
-                        <li class="page-item"><a class="page-link" href="#">&laquo; Previous</a></li>
-                        <!-- Pulsanti pagina diretta -->
-                        <li class="page-item"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <!-- Avanti -->
-                        <li class="page-item"><a class="page-link" href="#">Next &raquo;</a></li>
-                    </ul>
-                </nav>
-            </div>
         </div>
     </section>
 </template>
 
 <style lang="scss" scoped>
 @import "../styles/partials/variables";
-@import "../styles/partials/mixins";
 
 #menu {
-    @include bg-image;
+    background-image: url(../../public/back1.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
 
     & .ms_menu-title h1 {
         font-size: 36px;
@@ -271,19 +257,7 @@ export default {
             }
         }
     }
-
-    & .ms_pages {
-
-        & .pagination .page-item a {
-            background-color: $secondary-color;
-            color: $primary-alternative-color;
-            margin: 1rem auto;
-            border-color: $primary-alternative-color;
-        }
-    }
 }
-
-
 
 /* Interazioni */
 #menu .ms_inner-menu:hover {
