@@ -9,41 +9,33 @@ export default {
             store,
             restaurants: [],
             types: [],
-            currentType: '',
-            isLoading: false,
-            currentPage: 1,
-            lastPage: null
+            selectedTypes: [],
+            isLoading: false
         }
     },
     methods: {
         async fetchRestaurants() {
             this.isLoading = true;
-            let url = '';
 
-            if (this.currentType == '') {
-                url = `${this.store.baseUrl}/api/restaurants`;
-                await axios.get(url)
-                    .then((response) => {
-                        console.log(response);
-                        this.restaurants = response.data.results.data;
-                        this.isLoading = false;
-                    });
-            } else {
-                url = `${this.store.baseUrl}/api/restaurants/type/${this.currentType}`;
+            let params = {};
 
-                await axios.get(url)
-                    .then((response) => {
-                        console.log(response);
-                        this.restaurants = response.data.data;
-                        this.isLoading = false;
-                    });
+            if (this.selectedTypes.length > 0) {
+                params = { types: this.selectedTypes.join() };
             }
+
+            await axios.get(`${this.store.baseUrl}/api/restaurants`, params)
+                .then((response) => {
+                    this.restaurants = response.data.results.data;
+                    this.restaurants.pages = response.data.results.links;
+                    this.isLoading = false;
+                });
+
             this.isLoading = false;
         },
-        fetchTypes() {
+        async fetchTypes() {
             this.isLoading = true;
 
-            axios.get(`${this.store.baseUrl}/api/types`)
+            await axios.get(`${this.store.baseUrl}/api/types`)
                 .then((response) => {
                     this.types = response.data.results;
                     this.isLoading = false;
@@ -66,11 +58,18 @@ export default {
                 <h1>I nostri ristoranti</h1>
             </div>
 
+            <!-- Filtro ristoranti per tipologia -->
             <div class="ms_filter">
-                <select class="form-select" v-model="currentType" @change="fetchRestaurants()">
-                    <option value="" selected> Tutti </option>
-                    <option v-for="typology in types" :value="typology.id"> {{ typology.name }} </option>
-                </select>
+                <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                    Filtra per tipo
+                </button>
+                <ul class="dropdown-menu">
+                    <li v-for="typology in types" class="p-1">
+                        <input class="form-check-input" type="checkbox" :value="typology.id" :name="typology.id"
+                            :id="typology.id" v-model="selectedTypes" @checked="fetchRestaurants()" />
+                        <label class="form-check-label ps-2" :for="typology.id"> {{ typology.name }} </label>
+                    </li>
+                </ul>
             </div>
 
             <div class="row justify-content-center">
@@ -103,25 +102,13 @@ export default {
 
             <!-- Paginazione -->
             <div class="ms_pages">
-                <nav>
-                    <ul class="pagination">
-                        <!-- Indietro -->
-                        <li class="page-item">
-                            <button class="page-link" :class="{ 'disabled': currentPage == 1 }">
-                                &laquo; Previous
-                            </button>
-                        </li>
-                        <!-- Pulsanti pagina diretta -->
-                        <li class="page-item" v-for="(page, index) in this.lastPage">
-                            <button class="page-link" :class="{ 'active': currentPage == index + 1 }">
-                                1
-                            </button>
-                        </li>
-                        <!-- Avanti -->
-                        <li class="page-item">
-                            <button class="page-link" :class="{ 'disabled': currentPage == lastPage }">
-                                Next &raquo;
-                            </button>
+                <nav class="d-flex" aria-label="restaurants pagination">
+                    <ul class="pagination ms-auto my-3">
+                        <li v-for="page in restaurants.pages" class="page-item">
+                            <button type="button" class="page-link" @click="fetchRestaurants(page.url)" :class="{
+                                disabled: !page.url,
+                                active: page.active,
+                            }" v-html="page.label"></button>
                         </li>
                     </ul>
                 </nav>
@@ -132,10 +119,12 @@ export default {
 
 <style lang="scss" scoped>
 @import "../styles/partials/variables";
-@import "../styles/partials/mixins";
 
 #restaurants {
-    @include bg-image;
+    background-image: url(../../public/back1.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
 
     & .ms_title {
         text-align: center;
@@ -147,12 +136,20 @@ export default {
     }
 
     & .ms_filter {
-        width: 250px;
 
-        & select {
+        & button {
             background-color: $secondary-color;
-            color: $primary-color;
             border-color: $primary-color;
+            color: $primary-color;
+        }
+
+        & ul {
+            background-color: $secondary-color;
+            border-color: $primary-color;
+
+            & li {
+                color: $primary-color;
+            }
         }
     }
 
