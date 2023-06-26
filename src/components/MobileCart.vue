@@ -9,9 +9,9 @@ export default {
         };
     },
     methods: {
-        deleteFromCart(index) {
+        deleteFromCart(element) {
             let newItem = JSON.parse(sessionStorage.getItem('cart'))
-            this.store.cart.splice(index, 1)
+            this.store.cart.splice(element, 1)
             sessionStorage.setItem('cart', JSON.stringify(this.store.cart))
         },
         getCart() {
@@ -20,11 +20,20 @@ export default {
         }
     },
     computed: {
+        totalItemAmount() {
+            let totalItems = 0;
+
+            (this.store.cart).forEach((item) => {
+                totalItems += item.itemQuantity;
+            });
+
+            return totalItems;
+        },
         totalPrice() {
             let totalPrice = 0;
 
             this.store.cart.forEach((item) => {
-                totalPrice += item.price;
+                totalPrice += item.itemPrice * item.itemQuantity;
             });
 
             return totalPrice;
@@ -43,7 +52,7 @@ export default {
             <i class="fa-solid fa-cart-shopping"></i>
 
             <!-- Notifica oggetti contenuti nel carrello -->
-            <div v-if="store.cart.length > 0" class="ms_quantity-badge rounded-pill">
+            <div v-if="this.store.cart.length > 0" class="ms_quantity-badge rounded-pill">
                 <span>{{ this.store.cart.length }}</span>
             </div>
         </button>
@@ -68,22 +77,27 @@ export default {
                                 <div v-for="(element, index) in this.store.cart"
                                     class="ms_cart-item d-flex align-items-center">
                                     <!-- Immagine prodotto -->
-                                    <img :src="`${this.store.baseUrl}/storage/${element.image}`"
+                                    <img :src="`${this.store.baseUrl}/storage/${element.itemImage}`"
                                         class="ms_cart-image img-fluid" />
 
                                     <!-- Nome prodotto -->
                                     <div class="cart-product-details d-flex flex-column ms-3">
-                                        <h5 class="d-block mb-0 fw-bold">{{ element.name }}</h5>
+                                        <h5 class="d-block mb-0 fw-bold">{{ element.itemName }}</h5>
 
                                         <!-- Costo prodotto e quantità -->
                                         <div class="ms_cart-product-prices d-flex">
-                                            <span>€{{ element.price }} x 1</span>
-                                            <span class="ms-2 text-success fw-bold"> €{{ element.price }}</span>
+                                            <span>
+                                                €{{ element.itemPrice.toFixed(2).replace(".", ",") }} x {{
+                                                    element.itemQuantity }}
+                                            </span>
+                                            <span class="ms-2 text-success fw-bold">
+                                                €{{ element.itemTotalPrice.toFixed(2).replace(".", ",") }}
+                                            </span>
                                         </div>
                                     </div>
 
                                     <!-- cestino per rimuovere l'elemento dall'carrello -->
-                                    <button @click="deleteFromCart(index)" class="btn border-0 ms-auto">
+                                    <button @click="deleteFromCart(element)" class="btn border-0 ms-auto">
                                         <i class="fa-regular fa-trash-can"></i>
                                     </button>
                                 </div>
@@ -94,7 +108,7 @@ export default {
                             <div class="mt-auto">
                                 <router-link :to="{ name: 'checkout' }"
                                     class="btn ms_color-btn fw-bold text-white w-100 rounded-pill">
-                                    Checkout: €{{ totalPrice.toFixed(2).replace(".", ",") }}
+                                    CHECKOUT: €{{ totalPrice.toFixed(2).replace(".", ",") }}
                                 </router-link>
                             </div>
                         </div>

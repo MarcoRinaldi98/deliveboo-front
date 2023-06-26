@@ -9,19 +9,18 @@ export default {
         };
     },
     methods: {
-        deleteFromCart(index) {
+        deleteFromCart(element) {
             let newItem = JSON.parse(sessionStorage.getItem('cart'))
-            this.store.cart.splice(index, 1)
+            this.store.cart.splice(element, 1)
             sessionStorage.setItem('cart', JSON.stringify(this.store.cart))
-            console.log(this.store.cartData)
         },
     },
     computed: {
         totalPrice() {
             let totalPrice = 0;
 
-            this.store.cart.forEach((item) => {
-                totalPrice += item.price;
+            this.store.cart.forEach(item => {
+                totalPrice += item.itemPrice * item.itemQuantity;
             });
 
             return totalPrice;
@@ -36,7 +35,7 @@ export default {
             <!-- Logo -->
             <div class="ms_logo h-100">
                 <router-link :to="{ name: 'home' }">
-                    <img class="h-100" src="logo.gif" alt="logo" />
+                    <img class="h-100" src="../../public/logo.gif" alt="logo" />
                 </router-link>
             </div>
             <!-- Navbar -->
@@ -71,7 +70,7 @@ export default {
                         <i class="fa-solid fa-cart-shopping"></i>
                     </button>
                     <!-- Notifica oggetti contenuti nel carrello -->
-                    <div v-if="store.cart.length > 0" class="ms_quantity-badge badge rounded-pill position-absolute">
+                    <div v-if="this.store.cart.length > 0" class="ms_quantity-badge badge rounded-pill position-absolute">
                         {{ this.store.cart.length }}
                     </div>
 
@@ -87,22 +86,27 @@ export default {
 
                                     <div v-for="(element, index) in this.store.cart" class="ms_cart-item d-flex">
                                         <!-- Immagine prodotto -->
-                                        <img :src="`${this.store.baseUrl}/storage/${element.image}`"
+                                        <img :src="`${this.store.baseUrl}/storage/${element.itemImage}`"
                                             class="ms_cart-image img-fluid" />
 
                                         <!-- Nome prodotto -->
                                         <div class="ms_cart-product-details d-flex flex-column ms-2">
-                                            <span class="d-block fw-bold">{{ element.name }}</span>
+                                            <span class="d-block fw-bold">{{ element.itemName }}</span>
 
                                             <!-- Costo prodotto e quantità -->
                                             <div class="ms_cart-product-prices d-flex">
-                                                <span>€{{ element.price }} x 1</span>
-                                                <span class="ms-2 text-success fw-bold"> €{{ element.price }}</span>
+                                                <span>
+                                                    €{{ element.itemPrice.toFixed(2).replace(".", ",") }} x {{
+                                                        element.itemQuantity }}
+                                                </span>
+                                                <span class="ms-2 text-success fw-bold">
+                                                    €{{ element.itemTotalPrice.toFixed(2).replace(".", ",") }}
+                                                </span>
                                             </div>
                                         </div>
 
                                         <!-- cestino per rimuovere l'elemento dall'carrello -->
-                                        <button @click="deleteFromCart(index)" class="btn border-0 ms-auto">
+                                        <button @click="deleteFromCart(element)" class="btn border-0 ms-auto">
                                             <i class="fa-regular fa-trash-can"></i>
                                         </button>
                                     </div>

@@ -103,7 +103,7 @@ export default {
 footer {
 
     & .ms_footer-top {
-        background-image: url(BG.png);
+        background-image: url(../../public/BG.png);
         padding: 2rem 0;
         background-repeat: no-repeat;
         background-position: center;

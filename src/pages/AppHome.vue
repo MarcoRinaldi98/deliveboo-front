@@ -33,12 +33,10 @@ export default {
 
 <style lang="scss" scoped>
 @import "../styles/partials/variables";
+@import "../styles/partials/mixins";
 
 #jumbotron {
-    background-image: url(back1.jpg);
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
+    @include bg-image;
 
     & .ms_main-home-section {
 

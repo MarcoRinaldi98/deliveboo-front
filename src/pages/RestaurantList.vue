@@ -59,7 +59,7 @@ export default {
 
 <template>
     <!-- Ristoranti -->
-    <section id="restaurants">
+    <section id="restaurants" class="py-3">
         <div class="container">
             <!-- Titolo Sezione -->
             <div class="ms_title">
@@ -77,7 +77,7 @@ export default {
 
                 <!-- Loader -->
                 <div v-if="isLoading" class="driver-loader d-flex justify-content-center align-items-center py-5">
-                    <img src="logo.gif" alt="Loading" />
+                    <img src="../../public/logo.gif" alt="Loading" />
                 </div>
 
                 <!-- Ristorante -->
@@ -132,13 +132,10 @@ export default {
 
 <style lang="scss" scoped>
 @import "../styles/partials/variables";
+@import "../styles/partials/mixins";
 
 #restaurants {
-    padding: 2rem 0;
-    background-image: url(back1.jpg);
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
+    @include bg-image;
 
     & .ms_title {
         text-align: center;

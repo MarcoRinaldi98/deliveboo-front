@@ -18,11 +18,10 @@ export default {
         }
     },
     methods: {
-        deleteFromCart(index) {
+        deleteFromCart(element) {
             let newItem = JSON.parse(sessionStorage.getItem('cart'))
-            this.store.cart.splice(index, 1)
+            this.store.cart.splice(element, 1)
             sessionStorage.setItem('cart', JSON.stringify(this.store.cart))
-            console.log(this.store.cartData)
         },
         submitForm() {
 
@@ -33,7 +32,7 @@ export default {
             let totalPrice = 0;
 
             this.store.cart.forEach((item) => {
-                totalPrice += item.price;
+                totalPrice += item.itemPrice * item.itemQuantity;
             });
 
             return totalPrice;
@@ -89,29 +88,29 @@ export default {
                                 <div v-for="(element, index) in this.store.cart" class="row ms_card-row">
                                     <!-- Immagine prodotto -->
                                     <div class="col-4 h-100">
-                                        <img :src="`${this.store.baseUrl}/storage/${element.image}`" class="rounded-start"
-                                            alt="image" />
+                                        <img :src="`${this.store.baseUrl}/storage/${element.itemImage}`"
+                                            class="rounded-start" alt="image" />
                                     </div>
                                     <div class="col-8 h-100 ps-0">
                                         <div class="ms_card-body d-flex align-items-center h-100 ps-0">
                                             <div class="card-details">
                                                 <!-- Nome prodotto -->
-                                                <h5 class="card-title m-0">{{ element.name }}</h5>
+                                                <h5 class="card-title m-0">{{ element.itemName }}</h5>
                                                 <!-- Quantità prodotto -->
-                                                <small class="fst-italic m-0">Quantità: 1</small>
+                                                <small class="fst-italic m-0">Quantità: {{ element.itemQuantity }}</small>
                                                 <!-- Costo prodotto -->
                                                 <span class="text-success fw-bold me-2 d-block d-sm-none">
-                                                    €{{ element.price }}
+                                                    €{{ element.itemTotalPrice.toFixed(2).replace(".", ",") }}
                                                 </span>
                                             </div>
 
                                             <div class="item-price-delete d-flex align-items-center ms-auto">
                                                 <span class="text-success fw-bold me-2 d-none d-sm-block">
-                                                    €{{ element.price }}
+                                                    €{{ element.itemTotalPrice.toFixed(2).replace(".", ",") }}
                                                 </span>
 
                                                 <!-- cestino per rimuovere l'elemento dall'ordine/carrello -->
-                                                <button @click="deleteFromCart(index)" class="btn border-0 ms-auto">
+                                                <button @click="deleteFromCart(element)" class="btn border-0 ms-auto">
                                                     <i class="fa-regular fa-trash-can"></i>
                                                 </button>
                                             </div>
@@ -133,7 +132,7 @@ export default {
                 <div class="col-12 col-lg-6 position-relative">
                     <div v-if="isLoading"
                         class="ms_driver-loader position-absolute top-0 end-0 bottom-0 start-0 d-flex justify-content-center align-items-start">
-                        <img src="logo.gif" alt="Loading" />
+                        <img src="../../public/logo.gif" alt="Loading" />
                     </div>
 
                     <div class="ms_form-content border rounded-3">
@@ -201,9 +200,10 @@ export default {
 
 <style lang="scss" scoped>
 @import "../styles/partials/variables";
+@import "../styles/partials/mixins";
 
 section {
-    background-image: url(back1.jpg);
+    @include bg-image;
 
     & .ms_form-content {
         background-color: $secondary-color;

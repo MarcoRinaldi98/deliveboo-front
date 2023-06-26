@@ -1,0 +1,6 @@
+@mixin bg-image {
+    background-image: url(../../public/back1.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}

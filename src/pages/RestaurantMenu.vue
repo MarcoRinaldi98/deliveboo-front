@@ -7,9 +7,8 @@ export default {
     data() {
         return {
             store,
-
             isLoading: false,
-
+            dishCounter: 1
         }
     },
     methods: {
@@ -23,11 +22,33 @@ export default {
                     this.isLoading = false;
                 });
         },
-        AddTocart(index) {
+        addToCart(dish) {
+            const newItem = {
+                itemID: dish.id,
+                itemImage: dish.image,
+                itemName: dish.name,
+                itemPrice: dish.price,
+                itemQuantity: this.dishCounter,
+                itemTotalPrice: parseFloat((dish.price * this.dishCounter).toFixed(2)),
+            };
+
+            this.store.cart.push(newItem);
+
+            // LocalStorage
             this.store.cart = JSON.parse(sessionStorage.getItem('cart')) || [];
-            this.store.cart.push(this.store.dishes[index]);
+            this.store.cart.push(newItem);
             sessionStorage.setItem('cart', JSON.stringify(this.store.cart));
             console.log(sessionStorage.getItem('cart'))
+        },
+        increaseDishCounter() {
+            this.dishCounter += 1;
+        },
+
+        decreaseDishCounter() {
+            this.dishCounter -= 1;
+            if (this.dishCounter <= 1) {
+                this.dishCounter = 1;
+            }
         }
     },
     created() {
@@ -38,46 +59,97 @@ export default {
 
 <template>
     <!-- Menu -->
-    <section id="our-menu">
+    <section id="menu">
         <div class="container">
-            <!-- Titolo Sezione -->
-            <div class="our-menu-title">
-                <h1>Sfoglia il menu</h1>
-            </div>
 
             <!-- Pulsante per tornare alla lista dei ristoranti -->
-            <div class="ms_back">
+            <div class="ms_back py-3">
                 <router-link :to="{ name: 'ristoranti' }" type="button" class="btn btn-primary btn-sm">
                     <i class="fa-solid fa-left-long me-3"></i>
                     Torna alla lista dei ristoranti
                 </router-link>
             </div>
 
-            <div class="row justify-content-center">
+            <!-- Dettagli ristorante selezionato -->
+            <div class="ms_restaurant-detail container-fluid rounded-4 p-3">
+                <div class="row">
+                    <div class="col-12 col-lg-6">
+                        <!-- Immagine del ristorante selezionato -->
+                        <img class="img-fluid rounded-4" src="../../public/mc.jpg" alt="immagine ristorante">
+                    </div>
+                    <div class="col-12 col-lg-6 text-start">
+                        <!-- Nome del ristorante selezionato -->
+                        <h1 class="pt-2">Nome ristorante</h1>
+                        <!-- Indirizzo e numero di telefono del ristorante selezionato -->
+                        <div class="d-flex justify-content-around py-3 fst-italic">
+                            <small>indirizzo</small>
+                            <small>numero di telefono</small>
+                        </div>
+                        <!-- Descrizione del ristorante selezionato -->
+                        <p class="text-white">
+                            Descrizione: Lorem ipsum dolor sit amet consectetur adipisicing elit. Fuga
+                            debitis iusto
+                            distinctio mollitia asperiores atque accusamus! Facere enim doloremque adipisci quidem fugit
+                            harum, eveniet velit quas placeat voluptatem eius! Quibusdam.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Titolo Sezione -->
+            <div class="ms_menu-title py-4 text-center">
+                <h1>Sfoglia il menu</h1>
+            </div>
+
+            <div class="ms_menu row justify-content-center">
 
                 <!-- Loader -->
                 <div v-if="isLoading" class="driver-loader d-flex justify-content-center align-items-center py-5">
-                    <img src="logo.gif" alt="Loading" />
+                    <img src="../../public/logo.gif" alt="Loading" />
                 </div>
 
-                <!-- Piatto del ristorante -->
-                <div v-for="(dish, index) in this.store.dishes" :key="index" class="inner-menu-con col-12 col-md-6 col-lg-4 col-xxl-3">
-                    <div class="inner-menu-content">
+                <!-- Singolo piatto del ristorante -->
+                <div v-for="(dish, index) in this.store.dishes" :key="index"
+                    class="col-12 col-md-6 col-lg-4 col-xxl-3 py-3 px-4 my-2 text-center">
+                    <div class="ms_inner-menu rounded-5 py-4 px-3">
+                        <!-- Immagine del piatto -->
                         <img v-if="dish.image" :src="`${this.store.baseUrl}/storage/${dish.image}`" alt="Immagine piatto" />
+                        <!-- Immagine di riserva in caso di mancanza -->
                         <img v-else src="https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg"
                             alt="no image">
-                        <h2>{{ dish.name }}</h2>
-                        <p>{{ dish.description }}</p>
-                        <button @click="AddTocart(index)">
-                            <i class='bx bx-plus'></i>
-                            Aggiungi al carrello
-                        </button>
+                        <!-- Nome del piatto -->
+                        <h2 class="d-flex justify-content-center align-items-center">{{ dish.name }}</h2>
+                        <!-- Descrizione del piatto -->
+                        <p class="pb-2">{{ dish.description }} Lorem, ipsum dolor sit amet consectetur adipisicing elit. Vel
+                            quasi cumque, eaque consequuntur quas, atque aspernatur molestiae quae corporis, magnam labore
+                            nulla minima cupiditate nobis voluptate dicta saepe cum consectetur.</p>
+                        <!-- Pulsantiera -->
+                        <div>
+                            <!-- Pulsante per settare la quantità -->
+                            <div
+                                class="ms_quantity w-100 rounded-pill fw-semibold mb-2 d-flex justify-content-between align-items-center">
+                                <!-- Pulsante meno -->
+                                <button id="quantity-decrease" class="btn rounded-circle" @click="decreaseDishCounter()">
+                                    <i class="fa-solid fa-minus"></i>
+                                </button>
+                                <!-- Contatore -->
+                                <span>{{ dishCounter }}</span>
+                                <!-- Pulsante piu -->
+                                <button id="quantity-increase" class="btn rounded-circle" @click="increaseDishCounter()">
+                                    <i class="fa-solid fa-plus"></i>
+                                </button>
+                            </div>
+                            <!-- Pulsante per aggiungere l'elemento al carrello -->
+                            <button id="add-to-cart" class="btn w-100 rounded-pill fw-semibold" @click="addToCart(dish)">
+                                Aggiungi per €{{ (dish.price * dishCounter).toFixed(2).replace(".", ",") }}
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Paginazione -->
-            <div class="ms_pages">
+            <div class="ms_pages d-flex justify-content-center">
                 <nav>
                     <ul class="pagination">
                         <!-- Indietro -->
@@ -97,17 +169,13 @@ export default {
 
 <style lang="scss" scoped>
 @import "../styles/partials/variables";
+@import "../styles/partials/mixins";
 
-#our-menu {
-    background-image: url(back1.jpg);
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
+#menu {
+    @include bg-image;
 
-    & .our-menu-title h1 {
-        font-size: 40px;
-        padding: 2rem;
-        text-align: center;
+    & .ms_menu-title h1 {
+        font-size: 36px;
         color: $primary-color;
     }
 
@@ -121,54 +189,70 @@ export default {
         }
     }
 
-    & .row {
+    & .ms_restaurant-detail {
+        background-color: rgba($color-black, 0.8);
+        border: 3px solid $primary-color;
 
-        & .inner-menu-con {
-            padding: 1rem 2rem;
-            text-align: center;
-            margin: 1rem 0;
-            display: flex;
+        & h1 {
+            color: $primary-color;
+        }
 
-            & .inner-menu-content {
-                background-color: $secondary-color;
-                padding: 2rem 1rem;
-                border-radius: 20px;
-                position: relative;
-                z-index: 999;
-                transition: 1s all;
-                align-self: stretch;
-                box-shadow: rgba(0, 0, 0, 0.17) 0px -23px 25px 0px inset, rgba(0, 0, 0, 0.15) 0px -36px 30px 0px inset, rgba(0, 0, 0, 0.1) 0px -79px 40px 0px inset, rgba(0, 0, 0, 0.06) 0px 2px 1px, rgba(0, 0, 0, 0.09) 0px 4px 2px, rgba(0, 0, 0, 0.09) 0px 8px 4px, rgba(0, 0, 0, 0.09) 0px 16px 8px, rgba(0, 0, 0, 0.09) 0px 32px 16px;
+        & p {
+            height: 100px;
+            overflow-y: scroll;
 
-                & img {
-                    width: 150px;
-                    margin-top: -60px;
+            &::-webkit-scrollbar {
+                display: none;
+            }
+        }
+
+        & small {
+            color: $primary-alternative-color;
+        }
+    }
+
+    & .ms_menu {
+
+        & .ms_inner-menu {
+            background-color: $secondary-color;
+            box-shadow: rgba(0, 0, 0, 0.17) 0px -23px 25px 0px inset, rgba(0, 0, 0, 0.15) 0px -36px 30px 0px inset, rgba(0, 0, 0, 0.1) 0px -79px 40px 0px inset, rgba(0, 0, 0, 0.06) 0px 2px 1px, rgba(0, 0, 0, 0.09) 0px 4px 2px, rgba(0, 0, 0, 0.09) 0px 8px 4px, rgba(0, 0, 0, 0.09) 0px 16px 8px, rgba(0, 0, 0, 0.09) 0px 32px 16px;
+
+            & img {
+                width: 150px;
+                aspect-ratio: 4 / 3;
+                margin: -60px 0 1rem 0;
+            }
+
+            & h2 {
+                color: $color-white;
+                font-size: 24px;
+                height: 60px;
+            }
+
+            & p {
+                color: $color-white;
+                height: 100px;
+                overflow: hidden;
+            }
+
+            & div {
+
+                & .ms_quantity {
+                    border: 2px solid $primary-color;
+                    background-color: $primary-color;
+                    color: $secondary-color;
                 }
 
-                & h2 {
-                    color: $color-white;
-                    font-size: 28px;
-                }
-
-                & p {
-                    padding: 1rem 0 2rem 0;
-                    color: $color-white;
-                }
-
-                & button {
-                    margin-bottom: 15px;
-                    padding: 1rem 1.5rem;
-                    background: $secondary-color;
-                    color: $color-white;
-                    text-decoration: none;
-                    align-items: end;
+                & #add-to-cart {
+                    border: 2px solid $primary-color;
+                    background-color: $primary-color;
+                    color: $secondary-color;
                 }
             }
         }
     }
 
     & .ms_pages {
-        display: flex;
-        justify-content: center;
 
         & .pagination .page-item a {
             background-color: $secondary-color;
@@ -179,32 +263,36 @@ export default {
     }
 }
 
+
+
 /* Interazioni */
-#our-menu .inner-menu-content::before {
-    content: '';
-    position: absolute;
+#menu .ms_inner-menu:hover {
     background-color: $primary-color;
-    bottom: 0;
-    height: 0;
-    width: 50%;
-    left: 25%;
-    z-index: -1;
-    border-radius: 20px;
     transition: 1s all ease;
 }
 
-#our-menu .inner-menu-content:hover:before {
-    height: 100%;
-    width: 100%;
-    left: 0;
+#menu .ms_inner-menu:hover div .ms_quantity button {
+    cursor: pointer;
 }
 
-#our-menu .inner-menu-content a:hover {
-    background-color: $primary-alternative-color;
+#menu .ms_inner-menu:hover div .ms_quantity {
+    border: 2px solid $secondary-color;
 }
 
-#our-menu .ms_pages .pagination .page-item a:hover {
-    background-color: $primary-alternative-color;
-    color: $secondary-color;
+#menu .ms_inner-menu:hover div #add-to-cart {
+    border: 2px solid $secondary-color;
+}
+
+/* MEDIA QUERY */
+@media(min-width:1200px) {
+    #menu .ms_restaurant-detail p {
+        height: 150px;
+    }
+}
+
+@media(min-width:1400px) {
+    #menu .ms_restaurant-detail p {
+        height: 210px;
+    }
 }
 </style>
