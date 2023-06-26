@@ -49,12 +49,19 @@ export default {
             if (this.dishCounter <= 1) {
                 this.dishCounter = 1;
             }
-        }
+        },
+
+        checkIfExists(dish, store){
+            for (let i = 0; i < store.cart.length; i++) {
+                if (array[i].id === dish.id) {
+                    store.itemQuantity += 1;
+        }else this.addToCart(dish);
+    }
     },
     created() {
         this.fetchDishes();
     }
-}
+}}
 </script>
 
 <template>
