@@ -158,7 +158,7 @@ header {
                     position: relative;
 
                     & a {
-                        padding: 100% 1.5rem;
+                        padding: 2rem 1.5rem;
                         color: $primary-color;
 
                         &:before {
