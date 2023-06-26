@@ -17,17 +17,23 @@ export default {
         async fetchRestaurants() {
             this.isLoading = true;
 
+            let url = `${this.store.baseUrl}/api/restaurants`;
             let params = {};
 
             if (this.selectedTypes.length > 0) {
-                params = { types: this.selectedTypes.join() };
+                url = `${this.store.baseUrl}/api/restaurantsTypes`;
+                params = {
+                    // ciclare typeIds[]
+                    'typeIds[]': this.selectedTypes.join(`\&typeIds[]\=`)
+                };
             }
 
-            await axios.get(`${this.store.baseUrl}/api/restaurants`, params)
+            await axios.get(url, { params })
                 .then((response) => {
                     this.restaurants = response.data.results.data;
                     this.restaurants.pages = response.data.results.links;
                     this.isLoading = false;
+                    console.log(axios.get(url, { params }));
                 });
 
             this.isLoading = false;
@@ -65,8 +71,8 @@ export default {
                 </button>
                 <ul class="dropdown-menu">
                     <li v-for="typology in types" class="p-1">
-                        <input class="form-check-input" type="checkbox" :value="typology.id" :name="typology.id"
-                            :id="typology.id" v-model="selectedTypes" @checked="fetchRestaurants()" />
+                        <input v-model="selectedTypes" class="form-check-input" type="checkbox" :value="typology.id"
+                            :name="typology.id" :id="typology.id" @change="fetchRestaurants()" />
                         <label class="form-check-label ps-2" :for="typology.id"> {{ typology.name }} </label>
                     </li>
                 </ul>
