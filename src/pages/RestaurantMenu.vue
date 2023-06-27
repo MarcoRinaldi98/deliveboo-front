@@ -8,8 +8,7 @@ export default {
         return {
             store,
             isLoading: false,
-            dishCounter: 1,
-            
+            dishCounters: {},
         }
     },
     methods: {
@@ -23,22 +22,25 @@ export default {
                     this.isLoading = false;
                 });
         },
-        addToCart(dish) {
-            const newItem = {
-                itemID: dish.id,
-                itemImage: dish.image,
-                itemName: dish.name,
-                itemPrice: dish.price,
-                itemQuantity: this.dishCounter,
-                itemRestaurantId: dish.restaurant_id,
-                itemTotalPrice: parseFloat((dish.price * this.dishCounter).toFixed(2)),
-            };
+        addToCart(dish, dishCounter) {
+            if (dishCounter > 0) {
+                for (let i = 0; i < dishCounter; i++) {
+                    const newItem = {
+                        itemID: dish.id,
+                        itemImage: dish.image,
+                        itemName: dish.name,
+                        itemPrice: dish.price,
+                        itemQuantity: 1,
+                        itemRestaurantId: dish.restaurant_id,
+                itemTotalPrice: parseFloat((dish.price * dishCounter).toFixed(2)),
+                    };
 
-            if (this.store.checkRestaurant == null) {
+                    if (this.store.checkRestaurant == null) {
                 this.store.checkRestaurant = newItem.itemRestaurantId;
                 return;
             }
             console.log(this.store.checkRestaurant)
+                }
 
             if (this.store.checkRestaurant == newItem.itemRestaurantId) {
                 this.store.cart = JSON.parse(sessionStorage.getItem('cart')) || [];
@@ -56,36 +58,39 @@ export default {
             }
             console.log('io esisto')
         },
-        increaseDishCounter() {
-            this.dishCounter += 1;
+
+        increaseDishCounter(dishId) {
+            if (this.dishCounters[dishId] === undefined) {
+                this.dishCounters[dishId] = 1;
+            } else {
+                this.dishCounters[dishId] += 1;
+            }
         },
 
-        decreaseDishCounter() {
-            this.dishCounter -= 1;
-            if (this.dishCounter <= 1) {
-                this.dishCounter = 1;
+        decreaseDishCounter(dishId) {
+            if (this.dishCounters[dishId] > 1) {
+                this.dishCounters[dishId] -= 1;
             }
         },
         checkIfExists(dish, store) {
-        let isExisting = false;
-        if(store.length > 0){
-
-            for (let i = 0; i < store.length; i++) {
-                if (store[i].itemID === dish.id) {
-                    store[i].itemQuantity += this.dishCounter;
-                    store[i].itemTotalPrice += parseFloat((dish.price * this.dishCounter).toFixed(2));
-                    isExisting = true;
-                    break; // Esci dal ciclo una volta trovato l'elemento corrispondente
+            let isExisting = false;
+            if (store.length > 0) {
+                for (let i = 0; i < store.length; i++) {
+                    if (store[i].itemID === dish.id) {
+                        store[i].itemQuantity += this.dishCounters[dish.id];
+                        store[i].itemTotalPrice += parseFloat((dish.price * this.dishCounters[dish.id]).toFixed(2));
+                        isExisting = true;
+                        break; // Esci dal ciclo una volta trovato l'elemento corrispondente
+                    }
                 }
+
+                if (!isExisting) {
+                    this.addToCart(dish, this.dishCounters[dish.id]);
+                }
+            } else {
+                this.addToCart(dish, this.dishCounters[dish.id]);
             }
-            
-            if (!isExisting) {
-                this.addToCart(dish);
-            }
-        }else{
-                this.addToCart(dish);
-        }
-    }
+        },
     },
     created() {
         this.fetchDishes();
@@ -95,7 +100,7 @@ export default {
         this.checkEmptyCart();
     }
 }
-</script>
+</script> 
 
 <template>
     <!-- Menu -->
@@ -149,11 +154,11 @@ export default {
                 </div>
 
                 <!-- Singolo piatto del ristorante -->
-                <div v-for="(dish, index) in this.store.dishes" :key="index"
+                <div v-for="(dish, index) in store.dishes" :key="index"
                     class="col-12 col-md-6 col-lg-4 col-xxl-3 py-3 px-4 my-2 text-center">
                     <div class="ms_inner-menu rounded-5 py-4 px-3">
                         <!-- Immagine del piatto -->
-                        <img v-if="dish.image" :src="`${this.store.baseUrl}/storage/${dish.image}`" alt="Immagine piatto" />
+                        <img v-if="dish.image" :src="`${store.baseUrl}/storage/${dish.image}`" alt="Immagine piatto" />
                         <!-- Immagine di riserva in caso di mancanza -->
                         <img v-else src="https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg"
                             alt="no image">
@@ -169,19 +174,19 @@ export default {
                             <div
                                 class="ms_quantity w-100 rounded-pill fw-semibold mb-2 d-flex justify-content-between align-items-center">
                                 <!-- Pulsante meno -->
-                                <button id="quantity-decrease" class="btn rounded-circle" @click="decreaseDishCounter()">
+                                <button class="btn rounded-circle" @click="decreaseDishCounter(dish.id)">
                                     <i class="fa-solid fa-minus"></i>
                                 </button>
                                 <!-- Contatore -->
-                                <span>{{ dishCounter }}</span>
-                                <!-- Pulsante piu -->
-                                <button id="quantity-increase" class="btn rounded-circle" @click="increaseDishCounter()">
+                                <span>{{ dishCounters[dish.id] || 1 }}</span>
+                                <!-- Pulsante più -->
+                                <button class="btn rounded-circle" @click="increaseDishCounter(dish.id)">
                                     <i class="fa-solid fa-plus"></i>
                                 </button>
                             </div>
                             <!-- Pulsante per aggiungere l'elemento al carrello -->
-                            <button id="add-to-cart" class="btn w-100 rounded-pill fw-semibold" @click="checkIfExists(dish, store.cart)">
-                                Aggiungi per €{{ (dish.price * dishCounter).toFixed(2).replace(".", ",") }}
+                            <button class="btn w-100 rounded-pill fw-semibold" @click="checkIfExists(dish, store.cart)">
+                                Aggiungi per €{{ (dish.price * (dishCounters[dish.id] || 1)).toFixed(2).replace(".", ",") }}
                             </button>
                         </div>
                     </div>
