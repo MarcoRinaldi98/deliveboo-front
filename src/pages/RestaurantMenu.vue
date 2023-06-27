@@ -12,6 +12,7 @@ export default {
         }
     },
     methods: {
+        // Funzione per avere il menu del ristorante selezionato
         fetchDishes() {
             this.isLoading = true;
 
@@ -22,6 +23,7 @@ export default {
                     this.isLoading = false;
                 });
         },
+        // Funzione per aggiungere un piatto al carrello
         addToCart(dish) {
             const newItem = {
                 itemID: dish.id,
@@ -48,46 +50,47 @@ export default {
                 alert('Impossibile Aggiungere un piatto di un altro ristorante, se vuoi continuare svuota prima il carrello');
             }
         },
-        checkEmptyCart(){
-            if(this.store.cart.length == 0) {
+        checkEmptyCart() {
+            if (this.store.cart.length == 0) {
                 this.store.checkRestaurant = null;
                 return;
             }
-            console.log('io esisto')
         },
+        // Funzione per aumentare la quantita dell'oggetto
         increaseDishCounter() {
             this.dishCounter += 1;
         },
-
+        // Funzione per diminuire la quantita dell'oggetto
         decreaseDishCounter() {
             this.dishCounter -= 1;
             if (this.dishCounter <= 1) {
                 this.dishCounter = 1;
             }
         },
+        // Funzione per agfgiungere la quantita ad un alemento gia presente nel carrello se esiste
         checkIfExists(dish, store) {
-        let isExisting = false;
-        if(store.length > 0){
+            let isExisting = false;
+            if (store.length > 0) {
 
-            for (let i = 0; i < store.length; i++) {
-                if (store[i].itemID === dish.id) {
-                    store[i].itemQuantity += this.dishCounter;
-                    store[i].itemTotalPrice += parseFloat((dish.price * this.dishCounter).toFixed(2));
-                    isExisting = true;
-                    break; // Esci dal ciclo una volta trovato l'elemento corrispondente
+                for (let i = 0; i < store.length; i++) {
+                    if (store[i].itemID === dish.id) {
+                        store[i].itemQuantity += this.dishCounter;
+                        store[i].itemTotalPrice += parseFloat((dish.price * this.dishCounter).toFixed(2));
+                        isExisting = true;
+                        break; // Esci dal ciclo una volta trovato l'elemento corrispondente
+                    }
                 }
-            }
-            
-            if (!isExisting) {
+
+                if (!isExisting) {
+                    this.addToCart(dish);
+                }
+            } else {
                 this.addToCart(dish);
             }
-        }else{
-                this.addToCart(dish);
         }
-    }
     },
     created() {
-        this.fetchDishes();console.log(this.store.dishes)
+        this.fetchDishes();
     },
     computed() {
         this.checkEmptyCart();
@@ -178,7 +181,8 @@ export default {
                                 </button>
                             </div>
                             <!-- Pulsante per aggiungere l'elemento al carrello -->
-                            <button id="add-to-cart" class="btn w-100 rounded-pill fw-semibold" @click="checkIfExists(dish, store.cart)">
+                            <button id="add-to-cart" class="btn w-100 rounded-pill fw-semibold"
+                                @click="checkIfExists(dish, store.cart)">
                                 Aggiungi per €{{ (dish.price * dishCounter).toFixed(2).replace(".", ",") }}
                             </button>
                         </div>
@@ -191,12 +195,10 @@ export default {
 
 <style lang="scss" scoped>
 @import "../styles/partials/variables";
+@import "../styles/partials/mixins";
 
 #menu {
-    background-image: url(../../public/back1.jpg);
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
+    @include bg-image;
 
     & .ms_menu-title h1 {
         font-size: 36px;

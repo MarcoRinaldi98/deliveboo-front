@@ -9,28 +9,21 @@ export default {
         };
     },
     methods: {
-
+        // Funzione per rimuovere elementi dal carrello
         deleteFromCart(element) {
-            let newItem = JSON.parse(sessionStorage.getItem('cart'))
+            JSON.parse(sessionStorage.getItem('cart'))
             this.store.cart.splice(element, 1)
             sessionStorage.setItem('cart', JSON.stringify(this.store.cart))
             this.checkEmptyCart();
         },
+        // Funzione per recuperare il carrello all'avvio della pagina
         getCart() {
             this.store.cart = JSON.parse(sessionStorage.getItem('cart')) || [];
             console.log(sessionStorage.getItem('cart'))
         }
     },
     computed: {
-        totalItemAmount() {
-            let totalItems = 0;
-
-            (this.store.cart).forEach((item) => {
-                totalItems += item.itemQuantity;
-            });
-
-            return totalItems;
-        },
+        // Funzione per calcolare il prezzo totale dell'ordine
         totalPrice() {
             let totalPrice = 0;
 
@@ -40,8 +33,8 @@ export default {
 
             return totalPrice;
         },
-        checkEmptyCart(){
-            if(this.store.cart.length == 0) {
+        checkEmptyCart() {
+            if (this.store.cart.length == 0) {
                 this.store.checkRestaurant = null;
             }
         },

@@ -21,14 +21,10 @@ export default {
             let params = {};
 
             if (this.selectedTypes.length > 0) {
-                url = `${this.store.baseUrl}/api/restaurantsTypes`;
-                params = {
-                    // ciclare typeIds[]
-                    'typeIds[]': this.selectedTypes.join(`\&typeIds[]\=`)
-                };
+                url = `${this.store.baseUrl}/api/restaurantsTypes?typeIds[]=${this.selectedTypes.join('&typeIds[]=')}`;
             }
 
-            await axios.get(url, { params })
+            await axios.get(url)
                 .then((response) => {
                     this.restaurants = response.data.results.data;
                     this.restaurants.pages = response.data.results.links;
@@ -125,12 +121,10 @@ export default {
 
 <style lang="scss" scoped>
 @import "../styles/partials/variables";
+@import "../styles/partials/mixins";
 
 #restaurants {
-    background-image: url(../../public/back1.jpg);
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
+    @include bg-image;
 
     & .ms_title {
         text-align: center;
