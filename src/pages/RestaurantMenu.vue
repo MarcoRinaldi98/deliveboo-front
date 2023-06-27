@@ -12,7 +12,7 @@ export default {
         }
     },
     methods: {
-        async fetchDishes() {
+        fetchDishes() {
             this.isLoading = true;
 
             axios.get(`http://127.0.0.1:8000/api/dish/${this.$route.params.id}`)
@@ -29,16 +29,31 @@ export default {
                 itemName: dish.name,
                 itemPrice: dish.price,
                 itemQuantity: this.dishCounter,
+                itemRestaurantId: dish.restaurant_id,
                 itemTotalPrice: parseFloat((dish.price * this.dishCounter).toFixed(2)),
             };
 
-            this.store.cart.push(newItem);
+            if (this.store.checkRestaurant == null) {
+                this.store.checkRestaurant = newItem.itemRestaurantId;
+                return;
+            }
+            console.log(this.store.checkRestaurant)
 
-            // LocalStorage
-            this.store.cart = JSON.parse(sessionStorage.getItem('cart')) || [];
-            this.store.cart.push(newItem);
-            sessionStorage.setItem('cart', JSON.stringify(this.store.cart));
-            console.log(sessionStorage.getItem('cart'))
+            if (this.store.checkRestaurant == newItem.itemRestaurantId) {
+                this.store.cart = JSON.parse(sessionStorage.getItem('cart')) || [];
+                this.store.cart.push(newItem);
+                sessionStorage.setItem('cart', JSON.stringify(this.store.cart));
+                console.log(sessionStorage.getItem('cart'));
+            } else {
+                alert('Impossibile Aggiungere un piatto di un altro ristorante, se vuoi continuare svuota prima il carrello');
+            }
+        },
+        checkEmptyCart(){
+            if(this.store.cart.length == 0) {
+                this.store.checkRestaurant = null;
+                return;
+            }
+            console.log('io esisto')
         },
         increaseDishCounter() {
             this.dishCounter += 1;
@@ -72,7 +87,10 @@ export default {
     }
     },
     created() {
-        this.fetchDishes();
+        this.fetchDishes();console.log(this.store.dishes)
+    },
+    computed() {
+        this.checkEmptyCart();
     }
 }
 </script>
