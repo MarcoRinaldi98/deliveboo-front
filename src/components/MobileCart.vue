@@ -9,12 +9,10 @@ export default {
         };
     },
     methods: {
-
         deleteFromCart(element) {
             let newItem = JSON.parse(sessionStorage.getItem('cart'))
             this.store.cart.splice(element, 1)
             sessionStorage.setItem('cart', JSON.stringify(this.store.cart))
-            this.checkEmptyCart();
         },
         getCart() {
             this.store.cart = JSON.parse(sessionStorage.getItem('cart')) || [];
@@ -40,15 +38,10 @@ export default {
 
             return totalPrice;
         },
-        checkEmptyCart(){
-            if(this.store.cart.length == 0) {
-                this.store.checkRestaurant = null;
-            }
-        },
     },
     mounted() {
         this.getCart();
-    },
+    }
 }
 </script>
 

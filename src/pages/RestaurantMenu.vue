@@ -8,12 +8,11 @@ export default {
         return {
             store,
             isLoading: false,
-            dishCounter: 1,
-            
+            dishCounter: 1
         }
     },
     methods: {
-        fetchDishes() {
+        async fetchDishes() {
             this.isLoading = true;
 
             axios.get(`http://127.0.0.1:8000/api/dish/${this.$route.params.id}`)
@@ -30,31 +29,16 @@ export default {
                 itemName: dish.name,
                 itemPrice: dish.price,
                 itemQuantity: this.dishCounter,
-                itemRestaurantId: dish.restaurant_id,
                 itemTotalPrice: parseFloat((dish.price * this.dishCounter).toFixed(2)),
             };
 
-            if (this.store.checkRestaurant == null) {
-                this.store.checkRestaurant = newItem.itemRestaurantId;
-                return;
-            }
-            console.log(this.store.checkRestaurant)
+            this.store.cart.push(newItem);
 
-            if (this.store.checkRestaurant == newItem.itemRestaurantId) {
-                this.store.cart = JSON.parse(sessionStorage.getItem('cart')) || [];
-                this.store.cart.push(newItem);
-                sessionStorage.setItem('cart', JSON.stringify(this.store.cart));
-                console.log(sessionStorage.getItem('cart'));
-            } else {
-                alert('Impossibile Aggiungere un piatto di un altro ristorante, se vuoi continuare svuota prima il carrello');
-            }
-        },
-        checkEmptyCart(){
-            if(this.store.cart.length == 0) {
-                this.store.checkRestaurant = null;
-                return;
-            }
-            console.log('io esisto')
+            // LocalStorage
+            this.store.cart = JSON.parse(sessionStorage.getItem('cart')) || [];
+            this.store.cart.push(newItem);
+            sessionStorage.setItem('cart', JSON.stringify(this.store.cart));
+            console.log(sessionStorage.getItem('cart'))
         },
         increaseDishCounter() {
             this.dishCounter += 1;
@@ -89,10 +73,6 @@ export default {
     },
     created() {
         this.fetchDishes();
-        console.log(this.store.dishes)
-    },
-    computed() {
-        this.checkEmptyCart();
     }
 }
 </script>
