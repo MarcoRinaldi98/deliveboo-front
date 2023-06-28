@@ -17,12 +17,12 @@ export default {
 
             axios.get(`http://127.0.0.1:8000/api/menu/${this.$route.params.id}`)
                 .then((response) => {
-                    console.log(response);
                     this.store.dishes = response.data.results;
                     this.isLoading = false;
                     this.store.dishes.dishes.forEach((dish) => {
                         dish.quantity = 1;
                         });
+                    console.log(this.store.dishes)
                 });
         },
         // Funzione per aggiungere un piatto al carrello
@@ -39,7 +39,6 @@ export default {
 
             if (this.store.checkRestaurant == null) {
                 this.store.checkRestaurant = newItem.itemRestaurantId;
-                return;
             }
 
 
@@ -47,7 +46,6 @@ export default {
                 this.store.cart = JSON.parse(sessionStorage.getItem('cart')) || [];
                 this.store.cart.push(newItem);
                 sessionStorage.setItem('cart', JSON.stringify(this.store.cart));
-                console.log(sessionStorage.getItem('cart'));
             } else {
                 alert('Impossibile Aggiungere un piatto di un altro ristorante, se vuoi continuare svuota prima il carrello');
             }
@@ -70,7 +68,7 @@ export default {
             dish.quantity = 1;
             }
         },
-        // Funzione per agfgiungere la quantita ad un alemento gia presente nel carrello se esiste
+        // Funzione per aggiungere la quantita ad un elemento gia presente nel carrello se esiste
         checkIfExists(dish, store) {
             let isExisting = false;
             if (store.length > 0) {
@@ -119,7 +117,7 @@ export default {
                 <div class="row">
                     <div class="col-12 col-lg-6">
                         <!-- Immagine del ristorante selezionato -->
-                        <img class="img-fluid rounded-4" :src="`${this.store.baseUrl}/storage/${this.store.dishes.restaurant.image}`" alt="immagine ristorante">
+                        <img class="img-fluid rounded-4" :src="`${this.store.baseUrl}/storage/${this.store.dishes.restaurant.image}`" alt="immagine_Ristorante">
                     </div>
                     <div class="col-12 col-lg-6 text-start">
                         <!-- Nome del ristorante selezionato -->
