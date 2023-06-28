@@ -27,7 +27,7 @@ export default {
         },
         // Funzione che emette una chiamata axios per inviare i dati contenuti in formData al backend
         submitForm() {
-            axios.post("http://127.0.0.1:8000/api/order", this.formData)
+            axios.post(`${this.store.baseUrl}/api/order`, this.formData)
                 .then((response) => {
                     this.errors = [];
                     this.$router.push({ name: "order-sent" });
