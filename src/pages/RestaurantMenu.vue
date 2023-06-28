@@ -16,7 +16,7 @@ export default {
         fetchDishes() {
             this.isLoading = true;
 
-            axios.get(`http://127.0.0.1:8000/api/dish/${this.$route.params.id}`)
+            axios.get(`http://127.0.0.1:8000/api/menu/${this.$route.params.id}`)
                 .then((response) => {
                     console.log(response);
                     this.store.dishes = response.data.results;
@@ -116,22 +116,19 @@ export default {
                 <div class="row">
                     <div class="col-12 col-lg-6">
                         <!-- Immagine del ristorante selezionato -->
-                        <img class="img-fluid rounded-4" src="../../public/mc.jpg" alt="immagine ristorante">
+                        <img class="img-fluid rounded-4" :src="`${this.store.baseUrl}/storage/${this.store.dishes.restaurant.image}`" alt="immagine ristorante">
                     </div>
                     <div class="col-12 col-lg-6 text-start">
                         <!-- Nome del ristorante selezionato -->
-                        <h1 class="pt-2">Nome ristorante</h1>
+                        <h1 class="pt-2">{{this.store.dishes.restaurant.name}}</h1>
                         <!-- Indirizzo e numero di telefono del ristorante selezionato -->
                         <div class="d-flex justify-content-around py-3 fst-italic">
-                            <small>indirizzo</small>
-                            <small>numero di telefono</small>
+                            <small>{{this.store.dishes.restaurant.address}}</small>
+                            <small>{{this.store.dishes.restaurant.phone}}</small>
                         </div>
                         <!-- Descrizione del ristorante selezionato -->
                         <p class="text-white">
-                            Descrizione: Lorem ipsum dolor sit amet consectetur adipisicing elit. Fuga
-                            debitis iusto
-                            distinctio mollitia asperiores atque accusamus! Facere enim doloremque adipisci quidem fugit
-                            harum, eveniet velit quas placeat voluptatem eius! Quibusdam.
+                            {{this.store.dishes.restaurant.description}}
                         </p>
                     </div>
                 </div>
@@ -150,7 +147,7 @@ export default {
                 </div>
 
                 <!-- Singolo piatto del ristorante -->
-                <div v-for="(dish, index) in this.store.dishes" :key="index"
+                <div v-for="(dish, index) in this.store.dishes.dishes" :key="index"
                     class="col-12 col-md-6 col-lg-4 col-xxl-3 py-3 px-4 my-2 text-center">
                     <div class="ms_inner-menu rounded-5 py-4 px-3">
                         <!-- Immagine del piatto -->
@@ -161,9 +158,7 @@ export default {
                         <!-- Nome del piatto -->
                         <h2 class="d-flex justify-content-center align-items-center">{{ dish.name }}</h2>
                         <!-- Descrizione del piatto -->
-                        <p class="pb-2">{{ dish.description }} Lorem, ipsum dolor sit amet consectetur adipisicing elit. Vel
-                            quasi cumque, eaque consequuntur quas, atque aspernatur molestiae quae corporis, magnam labore
-                            nulla minima cupiditate nobis voluptate dicta saepe cum consectetur.</p>
+                        <p class="pb-2">{{ dish.description }}</p>
                         <!-- Pulsantiera -->
                         <div>
                             <!-- Pulsante per settare la quantità -->
