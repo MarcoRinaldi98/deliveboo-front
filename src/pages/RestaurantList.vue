@@ -18,7 +18,6 @@ export default {
             this.isLoading = true;
 
             let url = `${this.store.baseUrl}/api/restaurants`;
-            let params = {};
 
             if (this.selectedTypes.length > 0) {
                 url = `${this.store.baseUrl}/api/restaurantsTypes?typeIds[]=${this.selectedTypes.join('&typeIds[]=')}`;
@@ -26,13 +25,22 @@ export default {
 
             await axios.get(url)
                 .then((response) => {
-                    this.restaurants = response.data.results.data;
-                    this.restaurants.pages = response.data.results.links;
-                    this.isLoading = false;
-                    console.log(axios.get(url, { params }));
-                });
+                    let filteredRestaurants = response.data.results.data;
 
-            this.isLoading = false;
+                    if (this.selectedTypes.length > 0) {
+                        filteredRestaurants = filteredRestaurants.filter((restaurant) => {
+                            let restaurantTypeIds = restaurant.types.map((type) => type.id);
+                            return this.selectedTypes.every((typeId) => restaurantTypeIds.includes(typeId));
+                        });
+                    }
+
+                    this.restaurants = filteredRestaurants;
+                    this.isLoading = false;
+                })
+                .catch((error) => {
+                    console.error(error);
+                    this.isLoading = false;
+                });
         },
         async fetchTypes() {
             this.isLoading = true;
@@ -41,7 +49,15 @@ export default {
                 .then((response) => {
                     this.types = response.data.results;
                     this.isLoading = false;
+                })
+                .catch((error) => {
+                    console.error(error);
+                    this.isLoading = false;
                 });
+        },
+        updateSelectedTypes() {
+            // Call fetchRestaurants() to update the restaurant list based on the selected types
+            this.fetchRestaurants();
         }
     },
     created() {
@@ -102,7 +118,7 @@ export default {
 
             </div>
 
-            <!-- Paginazione -->
+            <!-- Paginazione 
             <div class="ms_pages">
                 <nav class="d-flex" aria-label="restaurants pagination">
                     <ul class="pagination ms-auto my-3">
@@ -114,7 +130,7 @@ export default {
                         </li>
                     </ul>
                 </nav>
-            </div>
+            </div>-->
         </div>
     </section>
 </template>
