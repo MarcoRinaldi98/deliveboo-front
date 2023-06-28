@@ -9,18 +9,25 @@ export default {
         };
     },
     methods: {
+
         // Funzione per rimuovere elementi dal carrello
         deleteFromCart(element) {
             JSON.parse(sessionStorage.getItem('cart'))
             this.store.cart.splice(element, 1)
+
             sessionStorage.setItem('cart', JSON.stringify(this.store.cart))
-            this.checkEmptyCart();
+
+            if (this.store.cart.length == 0) {
+                this.store.checkRestaurant = null;
+                sessionStorage.clear()
+            }
         },
         // Funzione per recuperare il carrello all'avvio della pagina
         getCart() {
             this.store.cart = JSON.parse(sessionStorage.getItem('cart')) || [];
             console.log(sessionStorage.getItem('cart'))
-        }
+        },
+
     },
     computed: {
         // Funzione per calcolare il prezzo totale dell'ordine
@@ -32,11 +39,6 @@ export default {
             });
 
             return totalPrice;
-        },
-        checkEmptyCart() {
-            if (this.store.cart.length == 0) {
-                this.store.checkRestaurant = null;
-            }
         },
     },
     mounted() {

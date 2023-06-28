@@ -13,7 +13,17 @@ export default {
         deleteFromCart(element) {
             JSON.parse(sessionStorage.getItem('cart'))
             this.store.cart.splice(element, 1)
+
             sessionStorage.setItem('cart', JSON.stringify(this.store.cart))
+
+
+            console.log('sono pippo')
+            if (this.store.cart.length == 0) {
+                this.store.checkRestaurant = null;
+                console.log(sessionStorage)
+                sessionStorage.clear()
+                console.log(sessionStorage)
+            }
         },
     },
     computed: {
