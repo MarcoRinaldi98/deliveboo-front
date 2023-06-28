@@ -4,6 +4,7 @@ import AppHome from './pages/AppHome.vue';
 import RestaurantList from './pages/RestaurantList.vue';
 import RestaurantMenu from './pages/RestaurantMenu.vue';
 import AppCheckout from './pages/AppCheckout.vue';
+import OrderSent from './pages/OrderSent.vue';
 
 const router = createRouter(
     {
@@ -28,6 +29,11 @@ const router = createRouter(
                 path: "/checkout",
                 name: "checkout",
                 component: AppCheckout
+            },
+            {
+                path: "/order-sent",
+                name: "order-sent",
+                component: OrderSent,
             }
         ]
     }
