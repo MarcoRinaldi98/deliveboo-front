@@ -31,8 +31,8 @@ const router = createRouter(
                 component: AppCheckout
             },
             {
-                path: "/order-sent",
-                name: "order-sent",
+                path: "/order",
+                name: "order",
                 component: OrderSent,
             }
         ]

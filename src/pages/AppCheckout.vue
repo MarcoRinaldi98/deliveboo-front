@@ -8,14 +8,13 @@ export default {
         return {
             store,
             isLoading: false,
-            formData: {
+            
                 guest_name: "",
                 guest_surname: "",
                 guest_address: "",
                 guest_email: "",
                 guest_phone: "",
-                nonce: ""
-            }
+                nonce:"",
         }
     },
     methods: {
@@ -27,10 +26,17 @@ export default {
         },
         // Funzione che emette una chiamata axios per inviare i dati contenuti in formData al backend
         submitForm() {
-            axios.post(`${this.store.baseUrl}/api/order`, this.formData)
-                .then((response) => {
+            axios.post(`http://127.0.0.1:8000/api/order`,
+                this.guest_name,
+                this.guest_surname,
+                this.guest_address,
+                this.guest_email,
+                this.guest_phone,
+                this.nonce
+                ).then((response) => {
                     this.errors = [];
-                    this.$router.push({ name: "order-sent" });
+                    this.$router.push({ name: "order" });
+                    console.log(response)
                 })
                 .catch((error) => {
                     this.errors = error.response.data.errors;
@@ -53,7 +59,9 @@ export default {
     mounted() {
         this.store.isCartOpen = false;
 
-        var button = document.querySelector('#submit-button');
+        let self = this; // Aggiungi questa riga per creare una variabile di riferimento al contesto corrente
+
+        let button = document.querySelector('#submit-button');
 
         // Braintree box settings 
         braintree.dropin.create({
@@ -66,17 +74,17 @@ export default {
                     if (err) {
                         // Gestisco l'errore durante la richiesta del metodo di pagamento
                         console.error(err);
-                        this.submitForm();
-                        this.isLoading = false;
+                        self.submitForm(); // Utilizza self invece di this
+                        self.isLoading = false; // Utilizza self invece di this
                         return;
                     }
                     // Aggiungi il campo 'nonce' al formData
-                    this.formData.nonce = payload.nonce;
+                    self.formData.nonce = payload.nonce; // Utilizza self invece di this
                     // Invia i dati dell'ordine al server
-                    this.submitForm();
+                    self.submitForm(); // Utilizza self invece di this
                 });
             });
-        })
+        });
     },
 }
 </script>
@@ -155,6 +163,7 @@ export default {
                         <hr class="m-0" />
 
                         <form class="p-3" method="POST">
+
                             <!-- Insermiento del nome dell'utente -->
                             <div class="mb-3">
                                 <label for="guest_name" class="form-label">Nome</label>
@@ -163,7 +172,7 @@ export default {
                                     Name
                                 </div>
                             </div>
-                            <!-- Insermiento del cognome dell'utente -->
+                            <!-- Inserimento del cognome dell'utente -->
                             <div class="mb-3">
                                 <label for="guest_surname" class="form-label">Cognome</label>
                                 <input type="text" class="form-control" id="customer_surname" v-model="guest_surname" />
@@ -171,7 +180,8 @@ export default {
                                     Surname
                                 </div>
                             </div>
-                            <!-- Insermiento indirizzo dell'utente -->
+
+                            <!-- Inserimento indirizzo dell'utente -->
                             <div class="mb-3">
                                 <label for="guest_address" class="form-label">Indirizzo</label>
                                 <input type="text" class="form-control" id="customer_address" v-model="guest_address" />
@@ -179,15 +189,17 @@ export default {
                                     Indirizzo
                                 </div>
                             </div>
-                            <!-- Insermineto email dell'utente -->
+
+                            <!-- Inserimento email dell'utente -->
                             <div class="mb-3">
                                 <label for="guest_mail" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="customer_mail" v-model="guest_mail" />
+                                <input type="email" class="form-control" id="customer_mail" v-model="guest_email" />
                                 <div class="invalid-feedback">
                                     Email
                                 </div>
                             </div>
-                            <!-- Insermineto del numero di telefono dell'utente -->
+
+                            <!-- Inserimento del numero di telefono dell'utente -->
                             <div class="mb-3">
                                 <label for="guest_phone" class="form-label">Telefono</label>
                                 <input type="text" class="form-control" id="customer_phone_number" maxlength="11"
