@@ -9,13 +9,15 @@ export default {
         };
     },
     methods: {
+        // Funzione per rimuovere elementi dal carrello
         deleteFromCart(element) {
-            let newItem = JSON.parse(sessionStorage.getItem('cart'))
+            JSON.parse(sessionStorage.getItem('cart'))
             this.store.cart.splice(element, 1)
             sessionStorage.setItem('cart', JSON.stringify(this.store.cart))
         },
     },
     computed: {
+        // Funzione per calcolare il prezzo totale del checkout
         totalPrice() {
             let totalPrice = 0;
 

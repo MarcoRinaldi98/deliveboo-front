@@ -1,5 +1,6 @@
 <script>
-import { store } from "../store.js";
+import axios from 'axios';
+import { store } from '../store.js';
 
 export default {
     name: "AppCheckout",
@@ -18,16 +19,27 @@ export default {
         }
     },
     methods: {
+        // Funzione per rimuovere elementi dal carrello
         deleteFromCart(element) {
-            let newItem = JSON.parse(sessionStorage.getItem('cart'))
+            JSON.parse(sessionStorage.getItem('cart'))
             this.store.cart.splice(element, 1)
             sessionStorage.setItem('cart', JSON.stringify(this.store.cart))
         },
+        // Funzione che emette una chiamata axios per inviare i dati contenuti in formData al backend
         submitForm() {
-
+            axios.post("http://127.0.0.1:8000/api/order", this.formData)
+                .then((response) => {
+                    this.errors = [];
+                    this.$router.push({ name: "order-sent" });
+                })
+                .catch((error) => {
+                    this.errors = error.response.data.errors;
+                    this.isLoading = false;
+                });
         }
     },
     computed: {
+        // Funzione per calcolare il prezzo totale dell'ordine
         totalPrice() {
             let totalPrice = 0;
 
@@ -43,13 +55,13 @@ export default {
 
         var button = document.querySelector('#submit-button');
 
+        // Braintree box settings 
         braintree.dropin.create({
             authorization: 'sandbox_g42y39zw_348pk9cgf3bgyw2b',
             selector: '#dropin-container'
         }, function (err, instance) {
             button.addEventListener("click", (event) => {
                 event.preventDefault();
-                this.isLoading = true;
                 instance.requestPaymentMethod((err, payload) => {
                     if (err) {
                         // Gestisco l'errore durante la richiesta del metodo di pagamento
