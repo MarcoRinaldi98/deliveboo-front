@@ -8,7 +8,7 @@ export default {
         return {
             store,
             isLoading: false,
-            dishCounter: 1
+            dishCounter: ''
         }
     },
     methods: {
@@ -21,6 +21,7 @@ export default {
                     console.log(response);
                     this.store.dishes = response.data.results;
                     this.isLoading = false;
+                    
                 });
         },
         // Funzione per aggiungere un piatto al carrello
@@ -50,6 +51,7 @@ export default {
                 alert('Impossibile Aggiungere un piatto di un altro ristorante, se vuoi continuare svuota prima il carrello');
             }
         },
+        
         checkEmptyCart() {
             if (this.store.cart.length == 0) {
                 this.store.checkRestaurant = null;
@@ -174,7 +176,9 @@ export default {
                                     <i class="fa-solid fa-minus"></i>
                                 </button>
                                 <!-- Contatore -->
-                                <span>{{ dishCounter }}</span>
+
+                                <!-- <span>{{ dishCounter }}</span> -->
+                                <input type="number" id="DishNumber" :name="dish.id" value="1" step="1" min="1" max="15" disabled v-model="dishCounter">
                                 <!-- Pulsante piu -->
                                 <button id="quantity-increase" class="btn rounded-circle" @click="increaseDishCounter()">
                                     <i class="fa-solid fa-plus"></i>
