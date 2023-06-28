@@ -8,13 +8,16 @@ export default {
         return {
             store,
             restaurants: [],
+            pages: [],
             types: [],
             selectedTypes: [],
+            currentPage: 1,
+            lastPage: null,
             isLoading: false
         }
     },
     methods: {
-        async fetchRestaurants() {
+        async fetchRestaurants(gotoPage) {
             this.isLoading = true;
 
             let url = `${this.store.baseUrl}/api/restaurants`;
@@ -23,7 +26,11 @@ export default {
                 url = `${this.store.baseUrl}/api/restaurantsTypes?typeIds[]=${this.selectedTypes.join('&typeIds[]=')}`;
             }
 
-            await axios.get(url)
+            await axios.get(url, {
+                params: {
+                    page: gotoPage
+                }
+            })
                 .then((response) => {
                     let filteredRestaurants = response.data.results.data;
 
@@ -35,6 +42,10 @@ export default {
                     }
 
                     this.restaurants = filteredRestaurants;
+                    this.currentPage = response.data.results.current_page;
+                    this.lastPage = response.data.results.last_page;
+                    console.log(this.lastPage);
+                    console.log(this.currentPage);
                     this.isLoading = false;
                 })
                 .catch((error) => {
@@ -84,7 +95,7 @@ export default {
                 <ul class="dropdown-menu">
                     <li v-for="typology in types" class="p-1">
                         <input v-model="selectedTypes" class="form-check-input" type="checkbox" :value="typology.id"
-                            :name="typology.id" :id="typology.id" @change="fetchRestaurants()" />
+                            :name="typology.id" :id="typology.id" @change="fetchRestaurants(1)" />
                         <label class="form-check-label ps-2" :for="typology.id"> {{ typology.name }} </label>
                     </li>
                 </ul>
@@ -118,19 +129,30 @@ export default {
 
             </div>
 
-            <!-- Paginazione 
+            <!-- Paginazione -->
             <div class="ms_pages">
-                <nav class="d-flex" aria-label="restaurants pagination">
-                    <ul class="pagination ms-auto my-3">
-                        <li v-for="page in restaurants.pages" class="page-item">
-                            <button type="button" class="page-link" @click="fetchRestaurants(page.url)" :class="{
-                                disabled: !page.url,
-                                active: page.active,
-                            }" v-html="page.label"></button>
+                <nav>
+                    <ul class="pagination d-flex justify-content-center my-5">
+                        <li class="page-item">
+                            <button class="page-link" @click="fetchRestaurants(currentPage - 1)"
+                                :class="{ 'disabled': currentPage == 1 }">
+                                &laquo; Previous
+                            </button>
+                        </li>
+                        <li v-for="(page, index) in this.lastPage" @click="fetchRestaurants(index + 1)" class=" page-item">
+                            <button class="page-link">
+                                {{ index + 1 }}
+                            </button>
+                        </li>
+                        <li class="page-item">
+                            <button class="page-link" @click="fetchRestaurants(currentPage + 1)"
+                                :class="{ 'disabled': currentPage == lastPage }">
+                                Next &raquo;
+                            </button>
                         </li>
                     </ul>
                 </nav>
-            </div>-->
+            </div>
         </div>
     </section>
 </template>
@@ -215,8 +237,6 @@ export default {
     }
 
     & .ms_pages {
-        display: flex;
-        justify-content: center;
 
         & .pagination .page-item button {
             background-color: $secondary-color;

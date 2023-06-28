@@ -21,7 +21,7 @@ export default {
                     this.isLoading = false;
                     this.store.dishes.dishes.forEach((dish) => {
                         dish.quantity = 1;
-                        });
+                    });
                     console.log(this.store.dishes)
                 });
         },
@@ -56,16 +56,16 @@ export default {
                 return;
             }
         },
-        
+
         // Funzione per aumentare la quantita dell'oggetto
-            increaseQuantity(dish) {
+        increaseQuantity(dish) {
             dish.quantity += 1;
         },
         // Funzione per diminuire la quantita dell'oggetto
-            decreaseQuantity(dish) {
+        decreaseQuantity(dish) {
             dish.quantity -= 1;
             if (dish.quantity < 1) {
-            dish.quantity = 1;
+                dish.quantity = 1;
             }
         },
         // Funzione per aggiungere la quantita ad un elemento gia presente nel carrello se esiste
@@ -117,19 +117,21 @@ export default {
                 <div class="row">
                     <div class="col-12 col-lg-6">
                         <!-- Immagine del ristorante selezionato -->
-                        <img class="img-fluid rounded-4" :src="`${this.store.baseUrl}/storage/${this.store.dishes.restaurant.image}`" alt="immagine_Ristorante">
+                        <img class="img-fluid rounded-4"
+                            :src="`${this.store.baseUrl}/storage/${this.store.dishes.restaurant.image}`"
+                            alt="immagine Ristorante">
                     </div>
                     <div class="col-12 col-lg-6 text-start">
                         <!-- Nome del ristorante selezionato -->
-                        <h1 class="pt-2">{{this.store.dishes.restaurant.name}}</h1>
+                        <h1 class="pt-2">{{ this.store.dishes.restaurant.name }}</h1>
                         <!-- Indirizzo e numero di telefono del ristorante selezionato -->
                         <div class="d-flex justify-content-around py-3 fst-italic">
-                            <small>{{this.store.dishes.restaurant.address}}</small>
-                            <small>{{this.store.dishes.restaurant.phone}}</small>
+                            <small>{{ this.store.dishes.restaurant.address }}</small>
+                            <small>{{ this.store.dishes.restaurant.phone }}</small>
                         </div>
                         <!-- Descrizione del ristorante selezionato -->
                         <p class="text-white">
-                            {{this.store.dishes.restaurant.description}}
+                            {{ this.store.dishes.restaurant.description }}
                         </p>
                     </div>
                 </div>
@@ -148,11 +150,16 @@ export default {
                 </div>
 
                 <!-- Singolo piatto del ristorante -->
-                <div v-for="(dish, index) in this.store.dishes.dishes" :key="index"
-                    class="col-12 col-md-6 col-lg-4 col-xxl-3 py-3 px-4 my-2 text-center">
+                <div v-if="this.store.dishes.dishes.length > 0" v-for="(dish, index) in this.store.dishes.dishes"
+                    :key="index" class="col-12 col-md-6 col-lg-4 col-xxl-3 py-3 px-4 my-2 text-center">
                     <div class="ms_inner-menu rounded-5 py-4 px-3">
+                        <!-- Se il piatto non è disponibile -->
+                        <div v-show="!dish.available" class="ms_available rounded-5">
+                            NON DISPONIBILE
+                        </div>
                         <!-- Immagine del piatto -->
-                        <img v-if="dish.image" :src="`${this.store.baseUrl}/storage/${dish.image}`" alt="Immagine piatto" />
+                        <img v-if="dish.image" class="rounded-5" :src="`${this.store.baseUrl}/storage/${dish.image}`"
+                            alt="Immagine piatto" />
                         <!-- Immagine di riserva in caso di mancanza -->
                         <img v-else src="https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg"
                             alt="no image">
@@ -184,6 +191,11 @@ export default {
                             </button>
                         </div>
                     </div>
+                </div>
+
+                <div v-else class="d-flex justify-content-center align-items-center text-center py-5">
+                    <h3 class="text-white fst-italic">Non è possibile ordinare da questo ristorante, menu in aggiornamento!
+                    </h3>
                 </div>
             </div>
         </div>
@@ -237,24 +249,45 @@ export default {
     & .ms_menu {
 
         & .ms_inner-menu {
+            position: relative;
             background-color: $secondary-color;
             box-shadow: rgba(0, 0, 0, 0.17) 0px -23px 25px 0px inset, rgba(0, 0, 0, 0.15) 0px -36px 30px 0px inset, rgba(0, 0, 0, 0.1) 0px -79px 40px 0px inset, rgba(0, 0, 0, 0.06) 0px 2px 1px, rgba(0, 0, 0, 0.09) 0px 4px 2px, rgba(0, 0, 0, 0.09) 0px 8px 4px, rgba(0, 0, 0, 0.09) 0px 16px 8px, rgba(0, 0, 0, 0.09) 0px 32px 16px;
 
+            & .ms_available {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: rgba($color: #000000, $alpha: 0.4);
+                z-index: 1005;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                color: $color-white;
+                font-size: 40px;
+                font-weight: bolder;
+                text-shadow: 1px 1px 2px $primary-color;
+            }
+
             & img {
-                width: 150px;
-                aspect-ratio: 4 / 3;
+                width: 160px;
+                height: 140px;
+                aspect-ratio: auto;
                 margin: -60px 0 1rem 0;
             }
 
             & h2 {
                 color: $color-white;
                 font-size: 24px;
-                height: 60px;
+                min-height: 60px;
+                max-height: 60px;
             }
 
             & p {
                 color: $color-white;
-                height: 100px;
+                min-height: 100px;
+                max-height: 100px;
                 overflow: hidden;
             }
 
