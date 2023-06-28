@@ -8,7 +8,6 @@ export default {
         return {
             store,
             isLoading: false,
-            dishCounter: 1
         }
     },
     methods: {
@@ -18,9 +17,12 @@ export default {
 
             axios.get(`http://127.0.0.1:8000/api/menu/${this.$route.params.id}`)
                 .then((response) => {
-                    console.log(response);
                     this.store.dishes = response.data.results;
                     this.isLoading = false;
+                    this.store.dishes.dishes.forEach((dish) => {
+                        dish.quantity = 1;
+                        });
+                    console.log(this.store.dishes)
                 });
         },
         // Funzione per aggiungere un piatto al carrello
@@ -30,52 +32,51 @@ export default {
                 itemImage: dish.image,
                 itemName: dish.name,
                 itemPrice: dish.price,
-                itemQuantity: this.dishCounter,
+                itemQuantity: dish.quantity,
                 itemRestaurantId: dish.restaurant_id,
-                itemTotalPrice: parseFloat((dish.price * this.dishCounter).toFixed(2)),
+                itemTotalPrice: parseFloat((dish.price * dish.quantity).toFixed(2)),
             };
 
             if (this.store.checkRestaurant == null) {
                 this.store.checkRestaurant = newItem.itemRestaurantId;
-                return;
             }
-            console.log(this.store.checkRestaurant)
+
 
             if (this.store.checkRestaurant == newItem.itemRestaurantId) {
                 this.store.cart = JSON.parse(sessionStorage.getItem('cart')) || [];
                 this.store.cart.push(newItem);
                 sessionStorage.setItem('cart', JSON.stringify(this.store.cart));
-                console.log(sessionStorage.getItem('cart'));
             } else {
                 alert('Impossibile Aggiungere un piatto di un altro ristorante, se vuoi continuare svuota prima il carrello');
             }
         },
         checkEmptyCart() {
-            if (this.store.cart.length == 0) {
+            if (!this.store.cart || this.store.cart.length === 0) {
                 this.store.checkRestaurant = null;
                 return;
             }
         },
+        
         // Funzione per aumentare la quantita dell'oggetto
-        increaseDishCounter() {
-            this.dishCounter += 1;
+            increaseQuantity(dish) {
+            dish.quantity += 1;
         },
         // Funzione per diminuire la quantita dell'oggetto
-        decreaseDishCounter() {
-            this.dishCounter -= 1;
-            if (this.dishCounter <= 1) {
-                this.dishCounter = 1;
+            decreaseQuantity(dish) {
+            dish.quantity -= 1;
+            if (dish.quantity < 1) {
+            dish.quantity = 1;
             }
         },
-        // Funzione per agfgiungere la quantita ad un alemento gia presente nel carrello se esiste
+        // Funzione per aggiungere la quantita ad un elemento gia presente nel carrello se esiste
         checkIfExists(dish, store) {
             let isExisting = false;
             if (store.length > 0) {
 
                 for (let i = 0; i < store.length; i++) {
                     if (store[i].itemID === dish.id) {
-                        store[i].itemQuantity += this.dishCounter;
-                        store[i].itemTotalPrice += parseFloat((dish.price * this.dishCounter).toFixed(2));
+                        store[i].itemQuantity += dish.quantity;
+                        store[i].itemTotalPrice += parseFloat((dish.price * dish.quantity).toFixed(2));
                         isExisting = true;
                         break; // Esci dal ciclo una volta trovato l'elemento corrispondente
                     }
@@ -116,7 +117,7 @@ export default {
                 <div class="row">
                     <div class="col-12 col-lg-6">
                         <!-- Immagine del ristorante selezionato -->
-                        <img class="img-fluid rounded-4" :src="`${this.store.baseUrl}/storage/${this.store.dishes.restaurant.image}`" alt="immagine ristorante">
+                        <img class="img-fluid rounded-4" :src="`${this.store.baseUrl}/storage/${this.store.dishes.restaurant.image}`" alt="immagine_Ristorante">
                     </div>
                     <div class="col-12 col-lg-6 text-start">
                         <!-- Nome del ristorante selezionato -->
@@ -165,20 +166,21 @@ export default {
                             <div
                                 class="ms_quantity w-100 rounded-pill fw-semibold mb-2 d-flex justify-content-between align-items-center">
                                 <!-- Pulsante meno -->
-                                <button id="quantity-decrease" class="btn rounded-circle" @click="decreaseDishCounter()">
+                                <button id="quantity-decrease" class="btn rounded-circle" @click="decreaseQuantity(dish)">
                                     <i class="fa-solid fa-minus"></i>
                                 </button>
                                 <!-- Contatore -->
-                                <span>{{ dishCounter }}</span>
+                                <span>{{ dish.quantity }}</span>
+                                <!-- <input type="number" min="0" max="15" v-model="dish.quantity" readonly> -->
                                 <!-- Pulsante piu -->
-                                <button id="quantity-increase" class="btn rounded-circle" @click="increaseDishCounter()">
+                                <button id="quantity-increase" class="btn rounded-circle" @click="increaseQuantity(dish)">
                                     <i class="fa-solid fa-plus"></i>
                                 </button>
                             </div>
                             <!-- Pulsante per aggiungere l'elemento al carrello -->
                             <button id="add-to-cart" class="btn w-100 rounded-pill fw-semibold"
                                 @click="checkIfExists(dish, store.cart)">
-                                Aggiungi per €{{ (dish.price * dishCounter).toFixed(2).replace(".", ",") }}
+                                Aggiungi per €{{ (dish.price * dish.quantity).toFixed(2).replace(".", ",") }}
                             </button>
                         </div>
                     </div>
