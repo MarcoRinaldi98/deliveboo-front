@@ -8,44 +8,47 @@ export default {
         return {
             store,
             isLoading: false,
-            
-                guest_name: "",
-                guest_surname: "",
-                guest_address: "",
-                guest_email: "",
-                guest_phone: "",
-                nonce:"",
-        }
+            guest_name: "",
+            guest_surname: "",
+            guest_address: "",
+            guest_email: "",
+            guest_phone: "",
+            amount:"",
+            status:"",
+            date:"",
+            restaurant_id:""
+        };
     },
     methods: {
-        // Funzione per rimuovere elementi dal carrello
+
         deleteFromCart(element) {
-            JSON.parse(sessionStorage.getItem('cart'))
-            this.store.cart.splice(element, 1)
-            sessionStorage.setItem('cart', JSON.stringify(this.store.cart))
+            this.store.cart.splice(element, 1);
+            sessionStorage.setItem('cart', JSON.stringify(this.store.cart));
         },
-        // Funzione che emette una chiamata axios per inviare i dati contenuti in formData al backend
         submitForm() {
-            axios.post(`http://127.0.0.1:8000/api/order`,
-                this.guest_name,
-                this.guest_surname,
-                this.guest_address,
-                this.guest_email,
-                this.guest_phone,
-                this.nonce
-                ).then((response) => {
-                    this.errors = [];
-                    this.$router.push({ name: "order" });
-                    console.log(response)
-                })
-                .catch((error) => {
-                    this.errors = error.response.data.errors;
-                    this.isLoading = false;
-                });
+        const formData = {
+            guest_name: this.guest_name,
+            guest_surname: this.guest_surname,
+            guest_address: this.guest_address,
+            guest_email: this.guest_email,
+            guest_phone: this.guest_phone,
+            amount: this.amount,
+            status: this.status,
+            date: this.date,
+            restaurant_id: this.restaurant_id,
+        };
+
+        axios.post('http://127.0.0.1:8000/api/order', formData)
+            .then(response => {
+                console.log(response.data);
+            })
+            .catch(error => {
+                console.error(error);
+            });
         }
     },
     computed: {
-        // Funzione per calcolare il prezzo totale dell'ordine
+        
         totalPrice() {
             let totalPrice = 0;
 
@@ -54,39 +57,12 @@ export default {
             });
 
             return totalPrice;
-        },
+        }
     },
     mounted() {
         this.store.isCartOpen = false;
-
-        let self = this; // Aggiungi questa riga per creare una variabile di riferimento al contesto corrente
-
-        let button = document.querySelector('#submit-button');
-
-        // Braintree box settings 
-        braintree.dropin.create({
-            authorization: 'sandbox_g42y39zw_348pk9cgf3bgyw2b',
-            selector: '#dropin-container'
-        }, function (err, instance) {
-            button.addEventListener("click", (event) => {
-                event.preventDefault();
-                instance.requestPaymentMethod((err, payload) => {
-                    if (err) {
-                        // Gestisco l'errore durante la richiesta del metodo di pagamento
-                        console.error(err);
-                        self.submitForm(); // Utilizza self invece di this
-                        self.isLoading = false; // Utilizza self invece di this
-                        return;
-                    }
-                    // Aggiungi il campo 'nonce' al formData
-                    self.formData.nonce = payload.nonce; // Utilizza self invece di this
-                    // Invia i dati dell'ordine al server
-                    self.submitForm(); // Utilizza self invece di this
-                });
-            });
-        });
-    },
-}
+    }
+};
 </script>
 
 <template>
@@ -162,12 +138,11 @@ export default {
 
                         <hr class="m-0" />
 
-                        <form class="p-3" method="POST">
+                        <form class="p-3" @submit.prevent="submitForm" id="submitForm">
 
-                            <!-- Insermiento del nome dell'utente -->
                             <div class="mb-3">
                                 <label for="guest_name" class="form-label">Nome</label>
-                                <input type="text" class="form-control" id="customer_name" v-model="guest_name" />
+                                <input type="text" class="form-control" id="guest_name" v-model="guest_name" />
                                 <div class="invalid-feedback">
                                     Name
                                 </div>
@@ -175,7 +150,7 @@ export default {
                             <!-- Inserimento del cognome dell'utente -->
                             <div class="mb-3">
                                 <label for="guest_surname" class="form-label">Cognome</label>
-                                <input type="text" class="form-control" id="customer_surname" v-model="guest_surname" />
+                                <input type="text" class="form-control" id="guest_surname" v-model="guest_surname" />
                                 <div class="invalid-feedback">
                                     Surname
                                 </div>
@@ -184,7 +159,7 @@ export default {
                             <!-- Inserimento indirizzo dell'utente -->
                             <div class="mb-3">
                                 <label for="guest_address" class="form-label">Indirizzo</label>
-                                <input type="text" class="form-control" id="customer_address" v-model="guest_address" />
+                                <input type="text" class="form-control" id="guest_address" v-model="guest_address" />
                                 <div class="invalid-feedback">
                                     Indirizzo
                                 </div>
@@ -192,8 +167,8 @@ export default {
 
                             <!-- Inserimento email dell'utente -->
                             <div class="mb-3">
-                                <label for="guest_mail" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="customer_mail" v-model="guest_email" />
+                                <label for="guest_email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="guest_email" v-model="guest_email" />
                                 <div class="invalid-feedback">
                                     Email
                                 </div>
@@ -202,14 +177,47 @@ export default {
                             <!-- Inserimento del numero di telefono dell'utente -->
                             <div class="mb-3">
                                 <label for="guest_phone" class="form-label">Telefono</label>
-                                <input type="text" class="form-control" id="customer_phone_number" maxlength="11"
+                                <input type="text" class="form-control" id="guest_phone" maxlength="11"
                                     v-model="guest_phone" />
                                 <div class="invalid-feedback">
                                     Phone
                                 </div>
                             </div>
 
-                            <div id="dropin-container"></div>
+                            <div class="mb-3">
+                                <label for="amount" class="form-label">Totale</label>
+                                <input type="text" class="form-control" id="amount" maxlength="11" v-model="amount"/>
+                                <div class="invalid-feedback">
+                                    Totale
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="status" class="form-label">Stato</label>
+                                <input type="text" class="form-control" id="status" maxlength="11"
+                                    v-model="status"/>
+                                <div class="invalid-feedback">
+                                    Stato
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="date" class="form-label">Data</label>
+                                <input type="text" class="form-control" id="date" maxlength="11"
+                                    v-model="date" />
+                                <div class="invalid-feedback">
+                                    date
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="restaurant_id" class="form-label">restaurant_id</label>
+                                <input type="text" class="form-control" id="restaurant_id" maxlength="11"
+                                    v-model="restaurant_id" />
+                                <div class="invalid-feedback">
+                                    date
+                                </div>
+                            </div>
 
                             <button id="submit-button" type="submit" class="btn w-100 rounded-pill text-white">
                                 Invia l'ordine
@@ -221,6 +229,7 @@ export default {
         </div>
     </section>
 </template>
+
 
 <style lang="scss" scoped>
 @import "../styles/partials/variables";
