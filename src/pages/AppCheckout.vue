@@ -1,6 +1,7 @@
 <script>
 import axios from 'axios';
 import { store } from '../store.js';
+import dropin from 'braintree-web-drop-in';
 
 export default {
     name: "AppCheckout",
@@ -8,14 +9,15 @@ export default {
         return {
             store,
             isLoading: false,
-            formData: {
+            orderInfo: {
                 guest_name: "",
                 guest_surname: "",
                 guest_address: "",
                 guest_email: "",
                 guest_phone: "",
-                nonce: ""
-            }
+                
+            },
+            // totalPrice: totalPrice(),
         }
     },
     methods: {
@@ -26,18 +28,60 @@ export default {
             sessionStorage.setItem('cart', JSON.stringify(this.store.cart))
         },
         // Funzione che emette una chiamata axios per inviare i dati contenuti in formData al backend
-        submitForm() {
-            axios.post(`${this.store.baseUrl}/api/order`, this.formData)
-                .then((response) => {
-                    this.errors = [];
-                    this.$router.push({ name: "order-sent" });
-                })
-                .catch((error) => {
-                    this.errors = error.response.data.errors;
-                    this.isLoading = false;
+        getToken() {
+            let token = axios.get('http://localhost:8000/api/generate-client-token')
+            console.log('ciao')
+                .catch(error => {
+                    console.log('Token request failed: ' + error.message);
+                    return
                 });
-        }
-    },
+            return token;
+        },
+            async getPaymentData() {
+            // Create a client-side Braintree instance
+            const clientToken = await this.getToken();
+
+            let that = this;
+            if (clientToken) {
+                this.isUserPaying = true;
+                const instance = await dropin.create({
+                    authorization: clientToken.data.clientToken,
+                    selector: '#dropin-container',
+                    locale: 'it_IT'
+                }, function (err, dropinInstance) {
+                    const submitBtn = document.getElementById('submit-payment-btn');
+
+                    submitBtn.addEventListener('click', function () {
+                        this.classList.add('disabled');
+                        dropinInstance.requestPaymentMethod(function (err, payload) {
+                            if (err) {
+                                submitBtn.classList.remove('disabled');
+                            }
+                            // Send the nonce to your Laravel backend for server-side processing
+
+                            axios.post('http://localhost:8000/api/process-payment', {
+                                paymentMethodNonce: payload.nonce,
+                                order: that.orderInfo,
+                            }).then(response => {
+
+                                if (response.data.success == true) {
+                                    that.emptyCart();
+                                    that.$router.push({ name: 'checkout-success', params: { orderCode: response.data.orderCode } });
+                                } else {
+                                    submitBtn.classList.remove('disabled');
+                                }
+                            })
+
+
+                        })
+                    })
+                })
+
+
+            } else {
+                console.log('Dropin creation failed: token not found');
+            }
+        },
     computed: {
         // Funzione per calcolare il prezzo totale dell'ordine
         totalPrice() {
@@ -52,33 +96,8 @@ export default {
     },
     mounted() {
         this.store.isCartOpen = false;
-
-        var button = document.querySelector('#submit-button');
-
-        // Braintree box settings 
-        braintree.dropin.create({
-            authorization: 'sandbox_g42y39zw_348pk9cgf3bgyw2b',
-            selector: '#dropin-container'
-        }, function (err, instance) {
-            button.addEventListener("click", (event) => {
-                event.preventDefault();
-                instance.requestPaymentMethod((err, payload) => {
-                    if (err) {
-                        // Gestisco l'errore durante la richiesta del metodo di pagamento
-                        console.error(err);
-                        this.submitForm();
-                        this.isLoading = false;
-                        return;
-                    }
-                    // Aggiungi il campo 'nonce' al formData
-                    this.formData.nonce = payload.nonce;
-                    // Invia i dati dell'ordine al server
-                    this.submitForm();
-                });
-            });
-        })
     },
-}
+}}
 </script>
 
 <template>
@@ -112,13 +131,13 @@ export default {
                                                 <small class="fst-italic m-0">Quantità: {{ element.itemQuantity }}</small>
                                                 <!-- Costo prodotto -->
                                                 <span class="text-success fw-bold me-2 d-block d-sm-none">
-                                                    €{{ element.itemTotalPrice.toFixed(2).replace(".", ",") }}
+                                                    €{{ element.itemTotalPrice}}
                                                 </span>
                                             </div>
 
                                             <div class="item-price-delete d-flex align-items-center ms-auto">
                                                 <span class="text-success fw-bold me-2 d-none d-sm-block">
-                                                    €{{ element.itemTotalPrice.toFixed(2).replace(".", ",") }}
+                                                    €{{ element.itemTotalPrice}}
                                                 </span>
 
                                                 <!-- cestino per rimuovere l'elemento dall'ordine/carrello -->
@@ -135,7 +154,7 @@ export default {
                         <hr class="m-0 mt-auto" />
                         <!-- Importo totale -->
                         <h3 class="text-end mb-0 p-3 fw-regular">
-                            Totale: <span class="text-success fw-bold">€{{ totalPrice.toFixed(2).replace(".", ",") }}</span>
+                            Totale: <span class="text-success fw-bold">€{{ totalPrice}}</span>
                         </h3>
                     </div>
                 </div>
@@ -158,7 +177,7 @@ export default {
                             <!-- Insermiento del nome dell'utente -->
                             <div class="mb-3">
                                 <label for="guest_name" class="form-label">Nome</label>
-                                <input type="text" class="form-control" id="customer_name" v-model="guest_name" />
+                                <input type="text" class="form-control" id="customer_name" v-model="orderInfo.guest_name" />
                                 <div class="invalid-feedback">
                                     Name
                                 </div>
@@ -166,7 +185,7 @@ export default {
                             <!-- Insermiento del cognome dell'utente -->
                             <div class="mb-3">
                                 <label for="guest_surname" class="form-label">Cognome</label>
-                                <input type="text" class="form-control" id="customer_surname" v-model="guest_surname" />
+                                <input type="text" class="form-control" id="customer_surname" v-model="orderInfo.guest_surname" />
                                 <div class="invalid-feedback">
                                     Surname
                                 </div>
@@ -174,7 +193,7 @@ export default {
                             <!-- Insermiento indirizzo dell'utente -->
                             <div class="mb-3">
                                 <label for="guest_address" class="form-label">Indirizzo</label>
-                                <input type="text" class="form-control" id="customer_address" v-model="guest_address" />
+                                <input type="text" class="form-control" id="customer_address" v-model="orderInfo.guest_address" />
                                 <div class="invalid-feedback">
                                     Indirizzo
                                 </div>
@@ -182,7 +201,7 @@ export default {
                             <!-- Insermineto email dell'utente -->
                             <div class="mb-3">
                                 <label for="guest_mail" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="customer_mail" v-model="guest_mail" />
+                                <input type="email" class="form-control" id="customer_mail" v-model="orderInfo.guest_mail" />
                                 <div class="invalid-feedback">
                                     Email
                                 </div>
@@ -191,18 +210,18 @@ export default {
                             <div class="mb-3">
                                 <label for="guest_phone" class="form-label">Telefono</label>
                                 <input type="text" class="form-control" id="customer_phone_number" maxlength="11"
-                                    v-model="guest_phone" />
+                                    v-model="orderInfo.guest_phone" />
                                 <div class="invalid-feedback">
                                     Phone
                                 </div>
                             </div>
 
-                            <div id="dropin-container"></div>
-
-                            <button id="submit-button" type="submit" class="btn w-100 rounded-pill text-white">
-                                Invia l'ordine
-                            </button>
                         </form>
+                        <div id="dropin-container"></div>
+
+                        <div class="container_button">
+                            <button id="submit-payment-btn">Conferma pagamento</button>
+                        </div>
                     </div>
                 </div>
             </div>
