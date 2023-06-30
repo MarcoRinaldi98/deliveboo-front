@@ -8,38 +8,78 @@ export default {
         return {
             store,
             isLoading: false,
-            formData: {
-                guest_name: "",
-                guest_surname: "",
-                guest_address: "",
-                guest_email: "",
-                guest_phone: "",
-                nonce: ""
-            }
-        }
+            guest_name: "",
+            guest_surname: "",
+            guest_address: "",
+            guest_email: "",
+            guest_phone: "",
+            status: "",
+            restaurant_id: "",
+            dropinInstance: null,
+            nonce: ""
+        };
     },
     methods: {
-        // Funzione per rimuovere elementi dal carrello
         deleteFromCart(element) {
-            JSON.parse(sessionStorage.getItem('cart'))
-            this.store.cart.splice(element, 1)
-            sessionStorage.setItem('cart', JSON.stringify(this.store.cart))
+            this.store.cart.splice(element, 1);
+            sessionStorage.setItem('cart', JSON.stringify(this.store.cart));
         },
-        // Funzione che emette una chiamata axios per inviare i dati contenuti in formData al backend
         submitForm() {
-            axios.post(`${this.store.baseUrl}/api/order`, this.formData)
-                .then((response) => {
-                    this.errors = [];
-                    this.$router.push({ name: "order-sent" });
-                })
-                .catch((error) => {
-                    this.errors = error.response.data.errors;
-                    this.isLoading = false;
+            const formData = {
+                guest_name: this.guest_name,
+                guest_surname: this.guest_surname,
+                guest_address: this.guest_address,
+                guest_email: this.guest_email,
+                guest_phone: this.guest_phone,
+                amount: this.totalPrice.toFixed(2),
+                status: this.status,
+                date: new Date().toISOString().slice(0, 10),
+                restaurant_id: this.restaurant_id,
+                nonce: this.nonce
+            };
+
+            if (this.dropinInstance) {
+                this.dropinInstance.requestPaymentMethod((err, payload) => {
+                    if (err) {
+                        console.error(err);
+                        return;
+                    }
+
+                    formData.nonce = payload.nonce;
+
+                    axios.post('http://127.0.0.1:8000/api/order', formData)
+                        .then(response => {
+                            console.log(response.data);
+                        })
+                        .catch(error => {
+                            console.error(error);
+                        });
                 });
+            }
+        },
+        initBraintreeDropin() {
+            const self = this;
+            const button = document.querySelector('#submit-button');
+
+            braintree.dropin.create({
+                authorization: 'sandbox_g42y39zw_348pk9cgf3bgyw2b',
+                selector: '#dropin-container'
+            }, function (err, instance) {
+                button.addEventListener('click', () => {
+                    instance.requestPaymentMethod((err, payload) => {
+                        if (err) {
+                            console.error(err);
+                            return;
+                        }
+                        console.log(payload);
+                    });
+                });
+
+                self.dropinInstance = instance;
+            });
         }
     },
     computed: {
-        // Funzione per calcolare il prezzo totale dell'ordine
         totalPrice() {
             let totalPrice = 0;
 
@@ -48,37 +88,13 @@ export default {
             });
 
             return totalPrice;
-        },
+        }
     },
     mounted() {
         this.store.isCartOpen = false;
-
-        var button = document.querySelector('#submit-button');
-
-        // Braintree box settings 
-        braintree.dropin.create({
-            authorization: 'sandbox_g42y39zw_348pk9cgf3bgyw2b',
-            selector: '#dropin-container'
-        }, function (err, instance) {
-            button.addEventListener("click", (event) => {
-                event.preventDefault();
-                instance.requestPaymentMethod((err, payload) => {
-                    if (err) {
-                        // Gestisco l'errore durante la richiesta del metodo di pagamento
-                        console.error(err);
-                        this.submitForm();
-                        this.isLoading = false;
-                        return;
-                    }
-                    // Aggiungi il campo 'nonce' al formData
-                    this.formData.nonce = payload.nonce;
-                    // Invia i dati dell'ordine al server
-                    this.submitForm();
-                });
-            });
-        })
-    },
-}
+        this.initBraintreeDropin();
+    }
+};
 </script>
 
 <template>
@@ -89,7 +105,7 @@ export default {
                 <div class="col-12 col-lg-6">
                     <div class="ms_form-content border h-100 rounded-3 d-flex flex-column">
                         <div class="form-title p-3">
-                            <h3 class="m-0 fw-bold">Riepilogo ordine ({{ new Date().toLocaleDateString() }})
+                            <h3 class="m-0 fw-bold">Riepilogo ordine ({{ new Date().toISOString().slice(0, 10) }})
                             </h3>
                         </div>
 
@@ -112,13 +128,13 @@ export default {
                                                 <small class="fst-italic m-0">Quantità: {{ element.itemQuantity }}</small>
                                                 <!-- Costo prodotto -->
                                                 <span class="text-success fw-bold me-2 d-block d-sm-none">
-                                                    €{{ element.itemTotalPrice.toFixed(2).replace(".", ",") }}
+                                                    €{{ element.itemTotalPrice.toFixed(2) }}
                                                 </span>
                                             </div>
 
                                             <div class="item-price-delete d-flex align-items-center ms-auto">
                                                 <span class="text-success fw-bold me-2 d-none d-sm-block">
-                                                    €{{ element.itemTotalPrice.toFixed(2).replace(".", ",") }}
+                                                    €{{ element.itemTotalPrice.toFixed(2) }}
                                                 </span>
 
                                                 <!-- cestino per rimuovere l'elemento dall'ordine/carrello -->
@@ -135,7 +151,7 @@ export default {
                         <hr class="m-0 mt-auto" />
                         <!-- Importo totale -->
                         <h3 class="text-end mb-0 p-3 fw-regular">
-                            Totale: <span class="text-success fw-bold">€{{ totalPrice.toFixed(2).replace(".", ",") }}</span>
+                            Totale: <span class="text-success fw-bold">€{{ totalPrice.toFixed(2) }}</span>
                         </h3>
                     </div>
                 </div>
@@ -154,46 +170,66 @@ export default {
 
                         <hr class="m-0" />
 
-                        <form class="p-3" method="POST">
-                            <!-- Insermiento del nome dell'utente -->
+                        <form class="p-3" @submit.prevent="submitForm" id="submitForm">
+
                             <div class="mb-3">
                                 <label for="guest_name" class="form-label">Nome</label>
-                                <input type="text" class="form-control" id="customer_name" v-model="guest_name" />
+                                <input type="text" class="form-control" id="guest_name" v-model="guest_name" />
                                 <div class="invalid-feedback">
                                     Name
                                 </div>
                             </div>
-                            <!-- Insermiento del cognome dell'utente -->
+                            <!-- Inserimento del cognome dell'utente -->
                             <div class="mb-3">
                                 <label for="guest_surname" class="form-label">Cognome</label>
-                                <input type="text" class="form-control" id="customer_surname" v-model="guest_surname" />
+                                <input type="text" class="form-control" id="guest_surname" v-model="guest_surname" />
                                 <div class="invalid-feedback">
                                     Surname
                                 </div>
                             </div>
-                            <!-- Insermiento indirizzo dell'utente -->
+
+                            <!-- Inserimento indirizzo dell'utente -->
                             <div class="mb-3">
                                 <label for="guest_address" class="form-label">Indirizzo</label>
-                                <input type="text" class="form-control" id="customer_address" v-model="guest_address" />
+                                <input type="text" class="form-control" id="guest_address" v-model="guest_address" />
                                 <div class="invalid-feedback">
                                     Indirizzo
                                 </div>
                             </div>
-                            <!-- Insermineto email dell'utente -->
+
+                            <!-- Inserimento email dell'utente -->
                             <div class="mb-3">
-                                <label for="guest_mail" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="customer_mail" v-model="guest_mail" />
+                                <label for="guest_email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="guest_email" v-model="guest_email" />
                                 <div class="invalid-feedback">
                                     Email
                                 </div>
                             </div>
-                            <!-- Insermineto del numero di telefono dell'utente -->
+
+                            <!-- Inserimento del numero di telefono dell'utente -->
                             <div class="mb-3">
                                 <label for="guest_phone" class="form-label">Telefono</label>
-                                <input type="text" class="form-control" id="customer_phone_number" maxlength="11"
+                                <input type="text" class="form-control" id="guest_phone" maxlength="11"
                                     v-model="guest_phone" />
                                 <div class="invalid-feedback">
                                     Phone
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="status" class="form-label">Stato</label>
+                                <input type="text" class="form-control" id="status" maxlength="11" v-model="status" />
+                                <div class="invalid-feedback">
+                                    Stato
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="restaurant_id" class="form-label">restaurant_id</label>
+                                <input type="text" class="form-control" id="restaurant_id" maxlength="11"
+                                    v-model="restaurant_id" />
+                                <div class="invalid-feedback">
+                                    date
                                 </div>
                             </div>
 
@@ -209,6 +245,7 @@ export default {
         </div>
     </section>
 </template>
+
 
 <style lang="scss" scoped>
 @import "../styles/partials/variables";
@@ -260,5 +297,39 @@ img {
 
 #submit-button {
     background-color: $primary-color;
+}
+
+.button {
+    cursor: pointer;
+    font-weight: 500;
+    left: 3px;
+    line-height: inherit;
+    position: relative;
+    text-decoration: none;
+    text-align: center;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 3px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    display: inline-block;
+}
+
+.button--small {
+    padding: 10px 20px;
+    font-size: 0.875rem;
+}
+
+.button--green {
+    outline: none;
+    background-color: #64d18a;
+    border-color: #64d18a;
+    color: white;
+    transition: all 200ms ease;
+}
+
+.button--green:hover {
+    background-color: #8bdda8;
+    color: white;
 }
 </style>
