@@ -16,7 +16,8 @@ export default {
             status: "",
             restaurant_id: "",
             dropinInstance: null,
-            nonce: ""
+            nonce: "",
+            jason:'',
         };
     },
     methods: {
@@ -32,11 +33,15 @@ export default {
                 guest_email: this.guest_email,
                 guest_phone: this.guest_phone,
                 amount: this.totalPrice.toFixed(2),
-                status: this.status,
+                status: 1,
                 date: new Date().toISOString().slice(0, 10),
-                restaurant_id: this.restaurant_id,
-                nonce: this.nonce
+                restaurant_id: "",
+                nonce: this.nonce,
+                jason: sessionStorage,
             };
+
+            delete formData.updated_at;
+            delete formData.created_at;
 
             if (this.dropinInstance) {
                 this.dropinInstance.requestPaymentMethod((err, payload) => {
@@ -46,6 +51,7 @@ export default {
                     }
 
                     formData.nonce = payload.nonce;
+                    formData.restaurant_id = this.store.cart[0].itemRestaurantId;
 
                     axios.post('http://127.0.0.1:8000/api/order', formData)
                         .then(response => {
@@ -54,6 +60,14 @@ export default {
                         .catch(error => {
                             console.error(error);
                         });
+                    
+                    axios.post('http://127.0.0.1:8000/api/dishOrder',formData)
+                    .then(response => {
+                        console.log(response.data);
+                    })
+                    .catch(error=>{
+                        console.log(error);
+                    })
                 });
             }
         },
@@ -217,20 +231,14 @@ export default {
                             </div>
 
                             <div class="mb-3">
-                                <label for="status" class="form-label">Stato</label>
-                                <input type="text" class="form-control" id="status" maxlength="11" v-model="status" />
-                                <div class="invalid-feedback">
-                                    Stato
-                                </div>
-                            </div>
 
-                            <div class="mb-3">
-                                <label for="restaurant_id" class="form-label">restaurant_id</label>
-                                <input type="text" class="form-control" id="restaurant_id" maxlength="11"
-                                    v-model="restaurant_id" />
-                                <div class="invalid-feedback">
-                                    date
+                                <div v-for="item in store.cart" :key="item.id">
+                                    <input type="text" class="form-control" id="restaurant_id" maxlength="11" :value="item.itemRestaurantId" hidden/>
                                 </div>
+                                <div class="invalid-feedback">
+                                    Restaurant ID
+                                </div>
+
                             </div>
 
                             <div id="dropin-container"></div>
