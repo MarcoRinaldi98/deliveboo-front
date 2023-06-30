@@ -15,7 +15,8 @@ export default {
             guest_phone: "",
             status: "",
             restaurant_id: "",
-            dropinInstance: null // Aggiungi questa nuova proprietà per memorizzare l'istanza di Braintree Drop-in
+            dropinInstance: null,
+            nonce: ""
         };
     },
     methods: {
@@ -34,12 +35,11 @@ export default {
                 status: this.status,
                 date: new Date().toISOString().slice(0, 10),
                 restaurant_id: this.restaurant_id,
-                nonce: ""
+                nonce: this.nonce
             };
 
-            // Ottieni il nonce del metodo di pagamento dall'istanza di Braintree Drop-in
             if (this.dropinInstance) {
-                this.dropinInstance.requestPaymentMethod(function (err, payload) {
+                this.dropinInstance.requestPaymentMethod((err, payload) => {
                     if (err) {
                         console.error(err);
                         return;
@@ -59,22 +59,22 @@ export default {
         },
         initBraintreeDropin() {
             const self = this;
-            var button = document.querySelector('#submit-button'); 
+            const button = document.querySelector('#submit-button');
+
             braintree.dropin.create({
                 authorization: 'sandbox_g42y39zw_348pk9cgf3bgyw2b',
                 selector: '#dropin-container'
             }, function (err, instance) {
-                button.addEventListener('click', (event)=>{
-                    event.preventDefault();
-                        instance.requestPaymentMethod((err,payload)=>{
+                button.addEventListener('click', () => {
+                    instance.requestPaymentMethod((err, payload) => {
                         if (err) {
                             console.error(err);
                             return;
                         }
                         console.log(payload);
-                    })
-                })
-                
+                    });
+                });
+
                 self.dropinInstance = instance;
             });
         }
