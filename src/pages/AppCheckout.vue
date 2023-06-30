@@ -29,8 +29,9 @@ export default {
         },
         // Funzione che emette una chiamata axios per inviare i dati contenuti in formData al backend
         getToken() {
+            console.log('ascas');
             let token = axios.get('http://localhost:8000/api/generate-client-token')
-            console.log('ciao')
+
                 .catch(error => {
                     console.log('Token request failed: ' + error.message);
                     return
@@ -39,6 +40,7 @@ export default {
         },
             async getPaymentData() {
             // Create a client-side Braintree instance
+            console.log('casc')
             const clientToken = await this.getToken();
 
             let that = this;
@@ -82,18 +84,19 @@ export default {
                 console.log('Dropin creation failed: token not found');
             }
         },
-    computed: {
-        // Funzione per calcolare il prezzo totale dell'ordine
-        totalPrice() {
-            let totalPrice = 0;
+    // computed: {
+    //     // Funzione per calcolare il prezzo totale dell'ordine
+    //     // totalPrice() {
+    //     //     let totalPrice = 0;
 
-            this.store.cart.forEach((item) => {
-                totalPrice += item.itemPrice * item.itemQuantity;
-            });
+    //     //     console.log('ca')
+    //     //     this.store.cart.forEach((item) => {
+    //     //         totalPrice += item.itemPrice * item.itemQuantity;
+    //     //     });
 
-            return totalPrice;
-        },
-    },
+    //     //     return totalPrice;
+    //     // },
+    // },
     mounted() {
         this.store.isCartOpen = false;
     },
@@ -131,13 +134,13 @@ export default {
                                                 <small class="fst-italic m-0">Quantità: {{ element.itemQuantity }}</small>
                                                 <!-- Costo prodotto -->
                                                 <span class="text-success fw-bold me-2 d-block d-sm-none">
-                                                    €{{ element.itemTotalPrice}}
+                                                    <!-- €{{ element.itemTotalPrice}} -->
                                                 </span>
                                             </div>
 
                                             <div class="item-price-delete d-flex align-items-center ms-auto">
                                                 <span class="text-success fw-bold me-2 d-none d-sm-block">
-                                                    €{{ element.itemTotalPrice}}
+                                                    <!-- €{{ element.itemTotalPrice}} -->
                                                 </span>
 
                                                 <!-- cestino per rimuovere l'elemento dall'ordine/carrello -->
@@ -154,7 +157,7 @@ export default {
                         <hr class="m-0 mt-auto" />
                         <!-- Importo totale -->
                         <h3 class="text-end mb-0 p-3 fw-regular">
-                            Totale: <span class="text-success fw-bold">€{{ totalPrice}}</span>
+                            <!-- Totale: <span class="text-success fw-bold">€{{ totalPrice}}</span> -->
                         </h3>
                     </div>
                 </div>
