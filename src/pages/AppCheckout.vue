@@ -84,19 +84,19 @@ export default {
                 console.log('Dropin creation failed: token not found');
             }
         },
-    // computed: {
-    //     // Funzione per calcolare il prezzo totale dell'ordine
-    //     // totalPrice() {
-    //     //     let totalPrice = 0;
+    computed: {
+        // Funzione per calcolare il prezzo totale dell'ordine
+        totalPrice() {
+            let totalPrice = 0;
 
-    //     //     console.log('ca')
-    //     //     this.store.cart.forEach((item) => {
-    //     //         totalPrice += item.itemPrice * item.itemQuantity;
-    //     //     });
+            console.log('ca')
+            this.store.cart.forEach((item) => {
+                totalPrice += item.itemPrice * item.itemQuantity;
+            });
 
-    //     //     return totalPrice;
-    //     // },
-    // },
+            return totalPrice;
+        },
+    },
     mounted() {
         this.store.isCartOpen = false;
     },
