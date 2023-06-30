@@ -13,42 +13,73 @@ export default {
             guest_address: "",
             guest_email: "",
             guest_phone: "",
-            amount:"",
-            status:"",
-            date:"",
-            restaurant_id:""
+            status: "",
+            restaurant_id: "",
+            dropinInstance: null // Aggiungi questa nuova proprietà per memorizzare l'istanza di Braintree Drop-in
         };
     },
     methods: {
-
         deleteFromCart(element) {
             this.store.cart.splice(element, 1);
             sessionStorage.setItem('cart', JSON.stringify(this.store.cart));
         },
         submitForm() {
-        const formData = {
-            guest_name: this.guest_name,
-            guest_surname: this.guest_surname,
-            guest_address: this.guest_address,
-            guest_email: this.guest_email,
-            guest_phone: this.guest_phone,
-            amount: this.amount,
-            status: this.status,
-            date: this.date,
-            restaurant_id: this.restaurant_id,
-        };
+            const formData = {
+                guest_name: this.guest_name,
+                guest_surname: this.guest_surname,
+                guest_address: this.guest_address,
+                guest_email: this.guest_email,
+                guest_phone: this.guest_phone,
+                amount: this.totalPrice.toFixed(2),
+                status: this.status,
+                date: new Date().toISOString().slice(0, 10),
+                restaurant_id: this.restaurant_id,
+                nonce: ""
+            };
 
-        axios.post('http://127.0.0.1:8000/api/order', formData)
-            .then(response => {
-                console.log(response.data);
-            })
-            .catch(error => {
-                console.error(error);
+            // Ottieni il nonce del metodo di pagamento dall'istanza di Braintree Drop-in
+            if (this.dropinInstance) {
+                this.dropinInstance.requestPaymentMethod(function (err, payload) {
+                    if (err) {
+                        console.error(err);
+                        return;
+                    }
+
+                    formData.nonce = payload.nonce;
+
+                    axios.post('http://127.0.0.1:8000/api/order', formData)
+                        .then(response => {
+                            console.log(response.data);
+                        })
+                        .catch(error => {
+                            console.error(error);
+                        });
+                });
+            }
+        },
+        initBraintreeDropin() {
+            const self = this;
+            var button = document.querySelector('#submit-button'); 
+            braintree.dropin.create({
+                authorization: 'sandbox_g42y39zw_348pk9cgf3bgyw2b',
+                selector: '#dropin-container'
+            }, function (err, instance) {
+                button.addEventListener('click', (event)=>{
+                    event.preventDefault();
+                        instance.requestPaymentMethod((err,payload)=>{
+                        if (err) {
+                            console.error(err);
+                            return;
+                        }
+                        console.log(payload);
+                    })
+                })
+                
+                self.dropinInstance = instance;
             });
         }
     },
     computed: {
-        
         totalPrice() {
             let totalPrice = 0;
 
@@ -61,6 +92,7 @@ export default {
     },
     mounted() {
         this.store.isCartOpen = false;
+        this.initBraintreeDropin();
     }
 };
 </script>
@@ -73,7 +105,7 @@ export default {
                 <div class="col-12 col-lg-6">
                     <div class="ms_form-content border h-100 rounded-3 d-flex flex-column">
                         <div class="form-title p-3">
-                            <h3 class="m-0 fw-bold">Riepilogo ordine ({{ new Date().toLocaleDateString() }})
+                            <h3 class="m-0 fw-bold">Riepilogo ordine ({{ new Date().toISOString().slice(0, 10) }})
                             </h3>
                         </div>
 
@@ -96,13 +128,13 @@ export default {
                                                 <small class="fst-italic m-0">Quantità: {{ element.itemQuantity }}</small>
                                                 <!-- Costo prodotto -->
                                                 <span class="text-success fw-bold me-2 d-block d-sm-none">
-                                                    €{{ element.itemTotalPrice.toFixed(2).replace(".", ",") }}
+                                                    €{{ element.itemTotalPrice.toFixed(2) }}
                                                 </span>
                                             </div>
 
                                             <div class="item-price-delete d-flex align-items-center ms-auto">
                                                 <span class="text-success fw-bold me-2 d-none d-sm-block">
-                                                    €{{ element.itemTotalPrice.toFixed(2).replace(".", ",") }}
+                                                    €{{ element.itemTotalPrice.toFixed(2) }}
                                                 </span>
 
                                                 <!-- cestino per rimuovere l'elemento dall'ordine/carrello -->
@@ -119,7 +151,7 @@ export default {
                         <hr class="m-0 mt-auto" />
                         <!-- Importo totale -->
                         <h3 class="text-end mb-0 p-3 fw-regular">
-                            Totale: <span class="text-success fw-bold">€{{ totalPrice.toFixed(2).replace(".", ",") }}</span>
+                            Totale: <span class="text-success fw-bold">€{{ totalPrice.toFixed(2) }}</span>
                         </h3>
                     </div>
                 </div>
@@ -185,28 +217,10 @@ export default {
                             </div>
 
                             <div class="mb-3">
-                                <label for="amount" class="form-label">Totale</label>
-                                <input type="text" class="form-control" id="amount" maxlength="11" v-model="amount"/>
-                                <div class="invalid-feedback">
-                                    Totale
-                                </div>
-                            </div>
-
-                            <div class="mb-3">
                                 <label for="status" class="form-label">Stato</label>
-                                <input type="text" class="form-control" id="status" maxlength="11"
-                                    v-model="status"/>
+                                <input type="text" class="form-control" id="status" maxlength="11" v-model="status" />
                                 <div class="invalid-feedback">
                                     Stato
-                                </div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="date" class="form-label">Data</label>
-                                <input type="text" class="form-control" id="date" maxlength="11"
-                                    v-model="date" />
-                                <div class="invalid-feedback">
-                                    date
                                 </div>
                             </div>
 
@@ -218,6 +232,8 @@ export default {
                                     date
                                 </div>
                             </div>
+
+                            <div id="dropin-container"></div>
 
                             <button id="submit-button" type="submit" class="btn w-100 rounded-pill text-white">
                                 Invia l'ordine
@@ -281,5 +297,39 @@ img {
 
 #submit-button {
     background-color: $primary-color;
+}
+
+.button {
+    cursor: pointer;
+    font-weight: 500;
+    left: 3px;
+    line-height: inherit;
+    position: relative;
+    text-decoration: none;
+    text-align: center;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 3px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    display: inline-block;
+}
+
+.button--small {
+    padding: 10px 20px;
+    font-size: 0.875rem;
+}
+
+.button--green {
+    outline: none;
+    background-color: #64d18a;
+    border-color: #64d18a;
+    color: white;
+    transition: all 200ms ease;
+}
+
+.button--green:hover {
+    background-color: #8bdda8;
+    color: white;
 }
 </style>
