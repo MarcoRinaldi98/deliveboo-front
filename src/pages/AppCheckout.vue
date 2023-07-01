@@ -26,6 +26,11 @@ export default {
             sessionStorage.setItem('cart', JSON.stringify(this.store.cart));
         },
         submitForm() {
+            if (!this.store.cart.length) {
+                alert('Il carrello è vuoto');
+                return;
+            }
+
             const formData = {
                 guest_name: this.guest_name,
                 guest_surname: this.guest_surname,
@@ -60,13 +65,27 @@ export default {
                                 console.log(response);
                                 formData.status = 1;
                             }
+
+                            this.resetForm();
+                            this.resetCart();
                         })
                         .catch(error => {
                             console.error(error);
                         });
-
                 });
             }
+        },
+        resetForm() {
+            this.guest_name = "";
+            this.guest_surname = "";
+            this.guest_address = "";
+            this.guest_email = "";
+            this.guest_phone = "";
+            this.nonce = "";
+        },
+        resetCart() {
+            this.store.cart = [];
+            sessionStorage.setItem('cart', JSON.stringify(this.store.cart));
         },
         initBraintreeDropin() {
             const self = this;
@@ -231,7 +250,8 @@ export default {
                             <div class="mb-3">
 
                                 <div v-for="item in store.cart" :key="item.id">
-                                    <input type="text" class="form-control" id="restaurant_id" maxlength="11" :value="item.itemRestaurantId" hidden/>
+                                    <input type="text" class="form-control" id="restaurant_id" maxlength="11"
+                                        :value="item.itemRestaurantId" hidden />
                                 </div>
                                 <div class="invalid-feedback">
                                     Restaurant ID
@@ -307,5 +327,4 @@ img {
 #submit-button {
     background-color: $primary-color;
 }
-
 </style>
