@@ -17,20 +17,15 @@ export default {
             restaurant_id: "",
             dropinInstance: null,
             nonce: "",
-            jason:'',
+            jason: '',
         };
     },
     methods: {
-        deleteFromCart(element) {
-            this.store.cart.splice(element, 1);
+        deleteFromCart(index) {
+            this.store.cart.splice(index, 1);
             sessionStorage.setItem('cart', JSON.stringify(this.store.cart));
         },
         submitForm() {
-            if (!this.store.cart.length) {
-                alert('Il carrello è vuoto');
-                return;
-            };
-
             const formData = {
                 guest_name: this.guest_name,
                 guest_surname: this.guest_surname,
@@ -38,7 +33,7 @@ export default {
                 guest_email: this.guest_email,
                 guest_phone: this.guest_phone,
                 amount: this.totalPrice.toFixed(2),
-                status: 1,
+                status: 0,
                 date: new Date().toISOString().slice(0, 10),
                 restaurant_id: "",
                 nonce: this.nonce,
@@ -58,13 +53,19 @@ export default {
                     formData.nonce = payload.nonce;
                     formData.restaurant_id = this.store.cart[0].itemRestaurantId;
 
-                    axios.post('http://127.0.0.1:8000/api/order', formData)
+                    axios
+                        .post("http://127.0.0.1:8000/api/order", formData)
                         .then(response => {
                             console.log(response.data);
+                            if (response.data.status === "payment_accepted") {
+                                console.log(response);
+                                formData.status = 1;
+                            }
                         })
                         .catch(error => {
                             console.error(error);
                         });
+
                 });
             }
         },
