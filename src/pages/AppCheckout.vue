@@ -53,8 +53,7 @@ export default {
                     formData.nonce = payload.nonce;
                     formData.restaurant_id = this.store.cart[0].itemRestaurantId;
 
-                    axios
-                        .post("http://127.0.0.1:8000/api/order", formData)
+                    axios.post("http://127.0.0.1:8000/api/order", formData)
                         .then(response => {
                             console.log(response.data);
                             if (response.data.status === "payment_accepted") {
@@ -84,6 +83,7 @@ export default {
                             return;
                         }
                         console.log(payload);
+                        document.getElementById("alert").classList.remove("d-none");
                     });
                 });
 
@@ -245,6 +245,9 @@ export default {
                                 Invia l'ordine
                             </button>
                         </form>
+                        <div class="alert alert-success d-none mx-2" role="alert" id="alert">
+                            Ordine effettuato con successo!
+                        </div>
                     </div>
                 </div>
             </div>
