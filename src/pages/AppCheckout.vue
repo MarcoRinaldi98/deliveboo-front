@@ -26,6 +26,11 @@ export default {
             sessionStorage.setItem('cart', JSON.stringify(this.store.cart));
         },
         submitForm() {
+            if (!this.store.cart.length) {
+                alert('Il carrello è vuoto');
+                return;
+            };
+
             const formData = {
                 guest_name: this.guest_name,
                 guest_surname: this.guest_surname,
@@ -60,14 +65,6 @@ export default {
                         .catch(error => {
                             console.error(error);
                         });
-                    
-                    axios.post('http://127.0.0.1:8000/api/dishOrder',formData)
-                    .then(response => {
-                        console.log(response.data);
-                    })
-                    .catch(error=>{
-                        console.log(error);
-                    })
                 });
             }
         },
