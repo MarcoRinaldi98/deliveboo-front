@@ -96,19 +96,19 @@ export default {
                 selector: '#dropin-container'
             }, function (err, instance) {
                 button.addEventListener('click', () => {
-                    instance.requestPaymentMethod((err, payload) => {
-                        if (err) {
-                            console.error(err);
-                            return;
-                        }
-                        console.log(payload);
-                        document.getElementById("alert").classList.remove("d-none");
-                    });
+                instance.requestPaymentMethod((err, payload) => {
+                    if (err) {
+                    console.error(err);
+                    return;
+                    }
+                    console.log(payload);
+                    self.$router.push({ name: 'order-sent' }); // Utilizzo di 'self' invece di 'this'
+                });
                 });
 
                 self.dropinInstance = instance;
             });
-        }
+            },
     },
     computed: {
         totalPrice() {
