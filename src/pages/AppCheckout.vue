@@ -64,6 +64,7 @@ export default {
                             if (response.data.status === "payment_accepted") {
                                 console.log(response);
                                 formData.status = 1;
+                                this.$router.push({ name: 'order-sent' });
                             }
 
                             this.resetForm();
@@ -102,7 +103,7 @@ export default {
                     return;
                     }
                     console.log(payload);
-                    self.$router.push({ name: 'order-sent' }); // Utilizzo di 'self' invece di 'this'
+                    self.$router.push({ name: 'order-sent' });
                 });
                 });
 
