@@ -125,7 +125,13 @@ export default {
     mounted() {
         this.store.isCartOpen = false;
         this.initBraintreeDropin();
-    }
+
+        // Recupera i dati del carrello dalla sessione
+        const cartData = sessionStorage.getItem('cart');
+        if (cartData) {
+            this.store.cart = JSON.parse(cartData);
+        }
+    },
 };
 </script>
 
