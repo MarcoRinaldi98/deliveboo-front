@@ -97,18 +97,18 @@ export default {
                 selector: '#dropin-container'
             }, function (err, instance) {
                 button.addEventListener('click', () => {
-                instance.requestPaymentMethod((err, payload) => {
-                    if (err) {
-                    console.error(err);
-                    return;
-                    }
-                    console.log(payload);
-                });
+                    instance.requestPaymentMethod((err, payload) => {
+                        if (err) {
+                            console.error(err);
+                            return;
+                        }
+                        console.log(payload);
+                    });
                 });
 
                 self.dropinInstance = instance;
             });
-            },
+        },
     },
     computed: {
         totalPrice() {
@@ -153,8 +153,12 @@ export default {
                                 <div v-for="(element, index) in this.store.cart" class="row ms_card-row">
                                     <!-- Immagine prodotto -->
                                     <div class="col-4 h-100">
-                                        <img :src="`${this.store.baseUrl}/storage/${element.itemImage}`"
+                                        <img v-if="element.itemImage"
+                                            :src="`${this.store.baseUrl}/storage/${element.itemImage}`"
                                             class="rounded-start" alt="image" />
+                                        <img v-else
+                                            src="https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg"
+                                            class="rounded-start" alt="no image">
                                     </div>
                                     <div class="col-8 h-100 ps-0">
                                         <div class="ms_card-body d-flex align-items-center h-100 ps-0">

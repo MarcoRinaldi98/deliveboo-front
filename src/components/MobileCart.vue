@@ -79,8 +79,12 @@ export default {
                                 <div v-for="(element, index) in this.store.cart"
                                     class="ms_cart-item d-flex align-items-center">
                                     <!-- Immagine prodotto -->
-                                    <img :src="`${this.store.baseUrl}/storage/${element.itemImage}`"
+                                    <img v-if="element.itemImage"
+                                        :src="`${this.store.baseUrl}/storage/${element.itemImage}`"
                                         class="ms_cart-image img-fluid" />
+                                    <img v-else
+                                        src="https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg"
+                                        class="ms_cart-image img-fluid" alt="no image">
 
                                     <!-- Nome prodotto -->
                                     <div class="cart-product-details d-flex flex-column ms-3">
