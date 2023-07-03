@@ -7,7 +7,7 @@ export default {
     data() {
         return {
             store,
-            isLoading: false,
+            isLoading: false
         }
     },
     methods: {
@@ -47,7 +47,14 @@ export default {
                 this.store.cart.push(newItem);
                 sessionStorage.setItem('cart', JSON.stringify(this.store.cart));
             } else {
-                alert('Impossibile Aggiungere un piatto di un altro ristorante, se vuoi continuare svuota prima il carrello');
+                this.store.cart = JSON.parse(sessionStorage.getItem('cart')) || [];
+                this.store.cart = '';
+                sessionStorage.setItem('cart', JSON.stringify(this.store.cart));
+
+                this.store.cart = JSON.parse(sessionStorage.getItem('cart')) || [];
+                this.store.cart.push(newItem);
+                this.store.checkRestaurant = newItem.itemRestaurantId;
+                sessionStorage.setItem('cart', JSON.stringify(this.store.cart));
             }
         },
         checkEmptyCart() {
