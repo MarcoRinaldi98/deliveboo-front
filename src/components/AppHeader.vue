@@ -66,7 +66,7 @@ export default {
                 <i class="fa-solid fa-bars h-100" data-bs-toggle="dropdown"></i>
                 <ul class="dropdown-menu">
                     <li><router-link class="dropdown-item" :to="{ name: 'home' }">Home</router-link></li>
-                    <li><router-link class="dropdown-item" :to="{ name: 'ristoranti' }">Restaurant</router-link></li>
+                    <li><router-link class="dropdown-item" :to="{ name: 'ristoranti' }">Ristoranti</router-link></li>
                 </ul>
             </div>
 
@@ -252,6 +252,10 @@ header {
             & .ms_cart-items-list {
                 max-height: 350px;
                 overflow: auto;
+
+                &::-webkit-scrollbar {
+                    display: none;
+                }
 
                 & .ms_cart-item {
 

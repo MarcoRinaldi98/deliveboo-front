@@ -223,7 +223,11 @@ export default {
                     padding: 1rem 0;
                     margin-bottom: 2rem;
                     height: 140px;
-                    overflow: hidden;
+                    overflow-y: scroll;
+
+                    &::-webkit-scrollbar {
+                        display: none;
+                    }
                 }
 
                 & a {
