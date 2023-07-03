@@ -64,11 +64,11 @@ export default {
                             if (response.data.status === "payment_accepted") {
                                 console.log(response);
                                 formData.status = 1;
-                                this.$router.push({ name: 'order-sent' });
                             }
 
                             this.resetForm();
                             this.resetCart();
+                            this.$router.push({ name: 'order-sent' });
                         })
                         .catch(error => {
                             console.error(error);
@@ -103,7 +103,6 @@ export default {
                     return;
                     }
                     console.log(payload);
-                    self.$router.push({ name: 'order-sent' });
                 });
                 });
 
